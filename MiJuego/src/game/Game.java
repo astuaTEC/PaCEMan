@@ -1,9 +1,17 @@
 package game;
 
+import game.characters.PacMan;
 import game.classes.EntityA;
 import game.classes.EntityB;
+import game.classes.EntityC;
+import game.gameControls.KeyInput;
+import game.gameControls.MouseInput;
+import game.graphics.BufferedImageLoader;
+import game.graphics.Textures;
 
 import javax.swing.*;
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
@@ -16,6 +24,7 @@ public class Game extends Canvas implements Runnable {
     public static final int HEIGHT = WIDTH / 12*9;
     public static final int SCALE = 2;
     public final String TITLE = "2D GAME";
+    private final Font font = new Font("arial", Font.BOLD, 25);
 
     private boolean running = false;
     private Thread thread;
@@ -23,16 +32,39 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
+    private BufferedImage menubg = null;
+
+    public final AudioClip eatFruit = Applet.newAudioClip(getClass().
+            getResource("/audio/pacman_eatfruit.wav"));
+    public final AudioClip death = Applet.newAudioClip(getClass().
+            getResource("/audio/pacman_death.wav"));
+    public final AudioClip intermission = Applet.newAudioClip(getClass().
+            getResource("/audio/pacman_intermission.wav"));
+    public final AudioClip munch = Applet.newAudioClip(getClass().
+            getResource("/audio/pacman_chomp.wav"));
+    public final AudioClip eatGhost = Applet.newAudioClip(getClass().
+            getResource("/audio/pacman_eatghost.wav"));
+    private final AudioClip intro = Applet.newAudioClip(getClass().
+            getResource("/audio/pacman_intro.wav"));
 
     private int enemy_cont = 1;
     private int enemy_killed = 0;
 
-    private Player p;
+    private PacMan p;
     private Controller c;
     private Textures textures;
+    private Menu menu;
 
     public LinkedList<EntityA> ea;
     public LinkedList<EntityB> eb;
+    public LinkedList<EntityC> ec;
+
+    public static enum STATE{
+        MENU,
+        GAME
+    };
+
+    public static STATE State = STATE.MENU;
 
     public void init(){
         requestFocus();
@@ -41,18 +73,25 @@ public class Game extends Canvas implements Runnable {
         try {
             spriteSheet = loader.loadImage("/imgs/pmsheet.png");
             background = loader.loadImage("/imgs/bg2.png");
+            menubg = loader.loadImage("/imgs/pac-man2.jpg");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         textures = new Textures(this);
         c = new Controller(textures);
-        p = new Player(200, 200, textures, this, c);
+        p = new PacMan(200, 200, textures, this, c);
+        menu = new Menu();
 
         ea = c.getEntityA();
         eb = c.getEntityB();
+        ec = c.getEntityC();
+
+        intro.loop();
+
 
         this.addKeyListener(new KeyInput(this));
+        this.addMouseListener(new MouseInput());
 
         c.createEnemy(enemy_cont);
     }
@@ -102,8 +141,9 @@ public class Game extends Canvas implements Runnable {
             render();
             frames++;
 
-            if (System.currentTimeMillis() - timer > 1000){
-                timer += 1000;
+            if (System.currentTimeMillis() - timer > 5000){
+                timer += 5000;
+                //System.out.println("5 seconds");
                 //System.out.println(updates + " Ticks, FPS " + frames);
                 updates = 0;
                 frames = 0;
@@ -114,8 +154,11 @@ public class Game extends Canvas implements Runnable {
     }
 
     private void tick(){
-        p.tick();
-        c.tick();
+        if(State == STATE.GAME){
+            p.tick();
+            c.tick();
+        }
+
     }
 
     private void render(){
@@ -129,10 +172,20 @@ public class Game extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         ////////////////////////////////
         g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-        g.drawImage(background, 0, 0, null);
 
-        p.render(g);
-        c.render(g);
+        if(State == STATE.GAME){
+            intro.stop();
+            g.drawImage(background, 0, 0, null);
+            g.setFont(font);
+            g.setColor(Color.WHITE);
+            g.drawString("PTS: " + p.getPoints(), 500, 450);
+            p.render(g);
+            c.render(g);
+        }
+        else if(State == STATE.MENU){
+            g.drawImage(menubg, 0, 0, null);
+            menu.render(g);
+        }
 
         ///////////////////////////////
         g.dispose();
@@ -142,33 +195,32 @@ public class Game extends Canvas implements Runnable {
     public void keyPressed(KeyEvent e) {
         int key = e.getExtendedKeyCode();
 
-        if(key == KeyEvent.VK_RIGHT){
-            p.setVelX(5);
-            p.setRight(true);
-            p.setLeft(false);
-            p.setUp(false);
-            p.setDown(false);
-        }
-        else if(key == KeyEvent.VK_LEFT){
-            p.setVelX(-5);
-            p.setRight(false);
-            p.setLeft(true);
-            p.setUp(false);
-            p.setDown(false);
-        }
-        else if(key == KeyEvent.VK_UP){
-            p.setVelY(-5);
-            p.setRight(false);
-            p.setLeft(false);
-            p.setUp(true);
-            p.setDown(false);
-        }
-        else if(key == KeyEvent.VK_DOWN){
-            p.setVelY(5);
-            p.setRight(false);
-            p.setLeft(false);
-            p.setUp(false);
-            p.setDown(true);
+        if(State == STATE.GAME) {
+            if (key == KeyEvent.VK_RIGHT) {
+                p.setVelX(5);
+                p.setRight(true);
+                p.setLeft(false);
+                p.setUp(false);
+                p.setDown(false);
+            } else if (key == KeyEvent.VK_LEFT) {
+                p.setVelX(-5);
+                p.setRight(false);
+                p.setLeft(true);
+                p.setUp(false);
+                p.setDown(false);
+            } else if (key == KeyEvent.VK_UP) {
+                p.setVelY(-5);
+                p.setRight(false);
+                p.setLeft(false);
+                p.setUp(true);
+                p.setDown(false);
+            } else if (key == KeyEvent.VK_DOWN) {
+                p.setVelY(5);
+                p.setRight(false);
+                p.setLeft(false);
+                p.setUp(false);
+                p.setDown(true);
+            }
         }
     }
 
