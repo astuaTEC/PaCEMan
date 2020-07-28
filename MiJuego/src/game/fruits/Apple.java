@@ -5,8 +5,8 @@ import game.graphics.Textures;
 
 public class Apple extends Fruit implements EntityC {
 
-    public Apple(double x, double y, int value, Textures textures){
-        super(x, y, value, textures);
+    public Apple(int col, int row, int value, Textures textures){
+        super(col, row, value, textures);
         this.fruit = textures.apple[0];
     }
 

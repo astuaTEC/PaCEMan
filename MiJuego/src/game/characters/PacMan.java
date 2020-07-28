@@ -4,6 +4,10 @@ import game.*;
 import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
+import game.classes.WallEntity;
+import game.elements.PacDots;
+import game.elements.Pill;
+import game.fruits.*;
 import game.graphics.Physics;
 import game.graphics.Textures;
 import game.libs.Animation;
@@ -24,11 +28,11 @@ public class PacMan implements EntityA {
     private Textures textures;
     private Game game;
     private Controller c;
-    private boolean up, down, right, left;
+    private boolean up, down, right, left, isDeath;
 
     AudioInputStream audio;
 
-    Animation upAnimation, downAnimation, leftAnimation, rightAnimation;
+    Animation upAnimation, downAnimation, leftAnimation, rightAnimation, deathAnimation;
 
 
     public PacMan(double x, double y, Textures textures, Game game, Controller c){
@@ -44,6 +48,8 @@ public class PacMan implements EntityA {
         down = false;
         left = false;
 
+        isDeath = false;
+
         upAnimation = new Animation(10, textures.pacman[6], textures.pacman[7]);
 
         rightAnimation = new Animation(10, textures.pacman[0], textures.pacman[1]);
@@ -52,20 +58,58 @@ public class PacMan implements EntityA {
 
         leftAnimation = new Animation(10, textures.pacman[4], textures.pacman[5]);
 
+        deathAnimation = new Animation(10,
+                textures.deathPacman[0], textures.deathPacman[1],
+                textures.deathPacman[2], textures.deathPacman[3],
+                textures.deathPacman[4], textures.deathPacman[5],
+                textures.deathPacman[6], textures.deathPacman[7]);
+
     }
 
     public void tick(){
         x += velX;
         y += velY;
 
-        if(x <= 0)
-            x = 0;
-        if (x >= 600)
-            x = 600;
+        if(x <= 20) {
+            //right warp
+            if (y >= 280 && y < 300)
+                x = 530;
+            else
+                x = 20;
+        }
+        if (x >= 540) {
+            //left warp
+            if(y >= 280 && y < 300) {
+                x = 20;
+            }
+            else
+                x = 540;
+        }
         if(y <= 0)
             y = 0;
-        if(y >= 480 - 50)
-            y = 480 - 50;
+        if(y >= 580)
+            y = 580;
+
+        // Collisions with walls
+        for(int i = 0; i < game.wc.size(); i++){
+            WallEntity tempEnt = game.wc.get(i);
+            if(Physics.Collision(this, tempEnt)){
+                double tempX = tempEnt.getX();
+                double tempY = tempEnt.getY();
+                if (tempX > x) {
+                    x = tempX - 20;
+                }
+                if (tempX < x) {
+                    x = tempX + 20;
+                }
+                if (tempY > y) {
+                    y = tempY - 20;
+                }
+                if (tempY < y) {
+                    y = tempY + 20;
+                }
+            }
+        }
 
         //Collisions with Ghosts
         for(int i = 0; i < game.eb.size(); i++){
@@ -74,6 +118,7 @@ public class PacMan implements EntityA {
                 System.out.println("Collision");
                 if(!tempEnt.isFlash()) {
                     game.death.play();
+                    isDeath = true;
                 }
                 else{
                     game.eatGhost.play();
@@ -88,42 +133,59 @@ public class PacMan implements EntityA {
         for(int i = 0; i < game.ec.size(); i++){
             EntityC tempEnt = game.ec.get(i);
             if(Physics.Collision(this, tempEnt)){
-                this.points += 25;
-                game.eatFruit.play();
-                c.removeEntity(tempEnt);
-                System.out.println(tempEnt.getClass());
-                for(int j = 0; j < game.eb.size(); j++){
-                    EntityB tempEnt2 = game.eb.get(j);
-                    tempEnt2.setFlash(true);
-                    game.intermission.loop();
+                this.points += tempEnt.getValue();
+                if(tempEnt.getClass().equals(Banana.class) || tempEnt.getClass().equals(Pineapple.class) ||
+                        tempEnt.getClass().equals(Cherry.class) || tempEnt.getClass().equals(Strawberry.class) ||
+                        tempEnt.getClass().equals(Apple.class) || tempEnt.getClass().equals(Orange.class) ){
+                    game.eatFruit.play();
                 }
+                else if(tempEnt.getClass().equals(Pill.class)){
+                    System.out.println("Pill");
+                    game.ghostFlashOn();
+                    game.flashTimer = System.currentTimeMillis();
+                    game.isFlahing = true;
+                }
+                else {
+                    game.munch.play();
+                }
+
+                c.removeEntity(tempEnt);
             }
         }
 
-        if(up)
-            upAnimation.runAnimation();
-        if(down)
-            downAnimation.runAnimation();
-        if(left)
-            leftAnimation.runAnimation();
-        if(right)
-            rightAnimation.runAnimation();
-
+        if(!isDeath) {
+            if (up)
+                upAnimation.runAnimation();
+            if (down)
+                downAnimation.runAnimation();
+            if (left)
+                leftAnimation.runAnimation();
+            if (right)
+                rightAnimation.runAnimation();
+        }
+        else{
+            deathAnimation.runAnimation();
+        }
     }
 
     public void render(Graphics g){
-        if(up)
-            upAnimation.drawAnimation(g, x, y, 0);
-        if(down)
-            downAnimation.drawAnimation(g, x, y,0);
-        if(left)
-            leftAnimation.drawAnimation(g, x, y, 0);
-        if(right)
-            rightAnimation.drawAnimation(g, x, y, 0);
+        if(!isDeath){
+            if (up)
+                upAnimation.drawAnimation(g, x, y, 0);
+            if (down)
+                downAnimation.drawAnimation(g, x, y, 0);
+            if (left)
+                leftAnimation.drawAnimation(g, x, y, 0);
+            if (right)
+                rightAnimation.drawAnimation(g, x, y, 0);
+        }
+        else {
+            deathAnimation.drawAnimation(g, x, y, 0);
+        }
     }
 
     public Rectangle getBounds(){
-        return new Rectangle((int)x, (int)y, 50, 50);
+        return new Rectangle((int)x, (int)y, 20, 20);
     }
 
     public double getX() {
@@ -188,5 +250,13 @@ public class PacMan implements EntityA {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public boolean isDeath() {
+        return isDeath;
+    }
+
+    public void setDeath(boolean death) {
+        isDeath = death;
     }
 }

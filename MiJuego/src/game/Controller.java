@@ -7,6 +7,7 @@ import game.characters.Speedy;
 import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
+import game.classes.WallEntity;
 import game.fruits.*;
 import game.graphics.Textures;
 
@@ -19,12 +20,14 @@ public class Controller {
     private LinkedList<EntityA> ea = new LinkedList<>();
     private LinkedList<EntityB> eb = new LinkedList<>();
     private LinkedList<EntityC> ec = new LinkedList<>();
+    private LinkedList<WallEntity> we = new LinkedList<>();
 
     Random r = new Random();
 
     EntityA entA;
     EntityB entB;
     EntityC entC;
+    WallEntity wallEntity;
 
     private Textures textures;
 
@@ -35,12 +38,12 @@ public class Controller {
         addEntity(new Bashful(100, 100, textures));
         addEntity(new Pokey(100, 100, textures));
 
-        addEntity(new Banana(100, 100, 25, textures));
-        addEntity(new Cherry(150, 100, 25, textures));
-        addEntity(new Apple(200, 100, 25, textures));
-        addEntity(new Orange(250, 100, 25, textures));
-        addEntity(new Pineapple(300, 100, 25, textures));
-        addEntity(new Strawberry(350, 100, 25, textures));
+        addEntity(new Banana(3, 2, 25, textures));
+        addEntity(new Cherry(4, 2, 25, textures));
+        addEntity(new Apple(5, 2, 25, textures));
+        addEntity(new Orange(6, 2, 25, textures));
+        addEntity(new Pineapple(7, 2, 25, textures));
+        addEntity(new Strawberry(8, 2, 25, textures));
 
     }
 
@@ -66,6 +69,11 @@ public class Controller {
             entC = ec.get(i);
             entC.tick();
         }
+        // Wall class
+        /*for(int i = 0; i < we.size(); i++){
+            wallEntity = we.get(i);
+            wallEntity.tick();
+        }*/
     }
 
     public void render(Graphics g){
@@ -84,6 +92,11 @@ public class Controller {
             entC = ec.get(i);
             entC.render(g);
         }
+        // Wall class
+        /*for(int i = 0; i < we.size(); i++){
+            wallEntity = we.get(i);
+            wallEntity.render(g);
+        }*/
     }
 
     public void addEntity(EntityA block){
@@ -104,6 +117,12 @@ public class Controller {
     public void removeEntity(EntityC block){
         ec.remove(block);
     }
+    public void addEntity(WallEntity block){
+        we.add(block);
+    }
+    public void removeEntity(WallEntity block){
+        we.remove(block);
+    }
 
     public LinkedList<EntityA> getEntityA(){
         return ea;
@@ -113,5 +132,8 @@ public class Controller {
     }
     public LinkedList<EntityC> getEntityC(){
         return ec;
+    }
+    public LinkedList<WallEntity> getWallEntity(){
+        return we;
     }
 }

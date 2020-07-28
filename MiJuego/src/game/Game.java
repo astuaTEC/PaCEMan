@@ -4,10 +4,13 @@ import game.characters.PacMan;
 import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
+import game.classes.WallEntity;
+import game.elements.Life;
 import game.gameControls.KeyInput;
 import game.gameControls.MouseInput;
 import game.graphics.BufferedImageLoader;
 import game.graphics.Textures;
+import game.levels.Level1;
 
 import javax.swing.*;
 import java.applet.Applet;
@@ -20,8 +23,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public class Game extends Canvas implements Runnable {
-    public static final int WIDTH = 320;
-    public static final int HEIGHT = WIDTH / 12*9;
+    public static final int WIDTH = 900;
+    public static final int HEIGHT = 620;
     public static final int SCALE = 2;
     public final String TITLE = "2D GAME";
     private final Font font = new Font("arial", Font.BOLD, 25);
@@ -33,6 +36,7 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
     private BufferedImage menubg = null;
+
 
     public final AudioClip eatFruit = Applet.newAudioClip(getClass().
             getResource("/audio/pacman_eatfruit.wav"));
@@ -49,15 +53,20 @@ public class Game extends Canvas implements Runnable {
 
     private int enemy_cont = 1;
     private int enemy_killed = 0;
+    public long flashTimer = 0;
+    public boolean isFlahing = false;
 
     private PacMan p;
     private Controller c;
     private Textures textures;
     private Menu menu;
+    private Level1 level1;
 
     public LinkedList<EntityA> ea;
     public LinkedList<EntityB> eb;
     public LinkedList<EntityC> ec;
+    public LinkedList<WallEntity> wc;
+    public LinkedList<Life> lifes = new LinkedList<>();
 
     public static enum STATE{
         MENU,
@@ -71,8 +80,8 @@ public class Game extends Canvas implements Runnable {
         BufferedImageLoader loader = new BufferedImageLoader();
 
         try {
-            spriteSheet = loader.loadImage("/imgs/pmsheet.png");
-            background = loader.loadImage("/imgs/bg2.png");
+            spriteSheet = loader.loadImage("/imgs/pmsheet2.0.png");
+            background = loader.loadImage("/imgs/lvl1.png");
             menubg = loader.loadImage("/imgs/pac-man2.jpg");
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,15 +89,16 @@ public class Game extends Canvas implements Runnable {
 
         textures = new Textures(this);
         c = new Controller(textures);
-        p = new PacMan(200, 200, textures, this, c);
+        p = new PacMan(282, 460, textures, this, c);
         menu = new Menu();
+        level1 = new Level1(c, textures, this);
 
         ea = c.getEntityA();
         eb = c.getEntityB();
         ec = c.getEntityC();
+        wc = c.getWallEntity();
 
         intro.loop();
-
 
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput());
@@ -148,6 +158,12 @@ public class Game extends Canvas implements Runnable {
                 updates = 0;
                 frames = 0;
             }
+            if(isFlahing) {
+                if (System.currentTimeMillis() - flashTimer > 8000) {
+                    isFlahing = false;
+                    ghostFlashOff();
+                }
+            }
 
         }
         stop();
@@ -178,9 +194,11 @@ public class Game extends Canvas implements Runnable {
             g.drawImage(background, 0, 0, null);
             g.setFont(font);
             g.setColor(Color.WHITE);
-            g.drawString("PTS: " + p.getPoints(), 500, 450);
+            g.drawString(String.valueOf(p.getPoints()), 795, 253);
+            //level1.render(g);
             p.render(g);
             c.render(g);
+            for (Life life : lifes) life.render(g);
         }
         else if(State == STATE.MENU){
             g.drawImage(menubg, 0, 0, null);
@@ -195,27 +213,27 @@ public class Game extends Canvas implements Runnable {
     public void keyPressed(KeyEvent e) {
         int key = e.getExtendedKeyCode();
 
-        if(State == STATE.GAME) {
+        if(State == STATE.GAME && !p.isDeath()) {
             if (key == KeyEvent.VK_RIGHT) {
-                p.setVelX(5);
+                p.setVelX(3);
                 p.setRight(true);
                 p.setLeft(false);
                 p.setUp(false);
                 p.setDown(false);
             } else if (key == KeyEvent.VK_LEFT) {
-                p.setVelX(-5);
+                p.setVelX(-3);
                 p.setRight(false);
                 p.setLeft(true);
                 p.setUp(false);
                 p.setDown(false);
             } else if (key == KeyEvent.VK_UP) {
-                p.setVelY(-5);
+                p.setVelY(-3);
                 p.setRight(false);
                 p.setLeft(false);
                 p.setUp(true);
                 p.setDown(false);
             } else if (key == KeyEvent.VK_DOWN) {
-                p.setVelY(5);
+                p.setVelY(3);
                 p.setRight(false);
                 p.setLeft(false);
                 p.setUp(false);
@@ -244,11 +262,11 @@ public class Game extends Canvas implements Runnable {
     public static void main(String[] args) {
         Game game = new Game();
 
-        game.setPreferredSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
-        game.setMaximumSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
-        game.setMinimumSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
+        game.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        game.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        game.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 
-        JFrame frame = new JFrame(game.TITLE);
+        JFrame frame = new JFrame();
         frame.add(game);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -278,5 +296,18 @@ public class Game extends Canvas implements Runnable {
 
     public void setEnemy_killed(int enemy_killed) {
         this.enemy_killed = enemy_killed;
+    }
+
+    public void ghostFlashOn(){
+        intermission.loop();
+        for (EntityB tempEnt2 : eb) {
+            tempEnt2.setFlash(true);
+        }
+    }
+    public void ghostFlashOff(){
+        intermission.stop();
+        for (EntityB tempEnt2 : eb) {
+            tempEnt2.setFlash(false);
+        }
     }
 }

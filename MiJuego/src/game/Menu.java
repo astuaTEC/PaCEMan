@@ -4,11 +4,13 @@ import java.awt.*;
 
 public class Menu {
 
-    public Rectangle playButton = new Rectangle(Game.WIDTH/ 2 + 120, 150 ,100, 50);
-    public Rectangle quitButton = new Rectangle(Game.WIDTH/ 2 + 120, 250 ,100, 50);
+
+    public Rectangle playButton = new Rectangle(Game.WIDTH/ 2 + 200, 150 ,100, 50);
+    public Rectangle quitButton = new Rectangle(Game.WIDTH/ 2 + 200, 250 ,100, 50);
 
     public void render(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
+
 
         //Font font = new Font("arial", Font.BOLD, 50);
         //g.setFont(font);

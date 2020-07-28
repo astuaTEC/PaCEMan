@@ -5,8 +5,8 @@ import game.graphics.Textures;
 
 public class Cherry extends Fruit implements EntityC {
 
-    public Cherry(double x, double y, int value, Textures textures){
-        super(x, y, value, textures);
+    public Cherry(int col, int row, int value, Textures textures){
+        super(col, row, value, textures);
         this.fruit = textures.cherry[0];
     }
 

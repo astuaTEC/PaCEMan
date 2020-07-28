@@ -13,9 +13,9 @@ public class Fruit {
     BufferedImage fruit;
 
 
-    public Fruit(double x, double y, int value, Textures textures){
-        this.x = x;
-        this.y = y;
+    public Fruit(int col, int row, int value, Textures textures){
+        this.x = col*20;
+        this.y = row*20 - 20;
         this.value = value;
         this.textures = textures;
     }
@@ -29,7 +29,7 @@ public class Fruit {
     }
 
     public Rectangle getBounds(){
-        return new Rectangle((int)x, (int)y, 50, 50);
+        return new Rectangle((int)x, (int)y, 20, 20);
     }
 
     public double getX() {

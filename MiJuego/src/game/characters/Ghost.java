@@ -51,7 +51,7 @@ public class Ghost {
     }
 
     public Rectangle getBounds(){
-        return new Rectangle((int)x, (int)y, 50, 50);
+        return new Rectangle((int)x, (int)y, 20, 20);
     }
 
     public double getX() {
@@ -73,6 +73,7 @@ public class Ghost {
     public boolean isFlash() {
         return isFlash;
     }
+
     public void setFlash(boolean flash) {
         isFlash = flash;
     }
