@@ -6,8 +6,13 @@ import game.libs.Animation;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Ghost character class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Ghost {
 
+    // Attributes
     double x, y;
 
     Random r = new Random();
@@ -18,6 +23,7 @@ public class Ghost {
 
     boolean up, down, right, left, isFlash;
 
+    // Animations
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, flashAnimation;
 
     public Ghost(double x, double y, Textures textures){
@@ -34,6 +40,10 @@ public class Ghost {
         flashAnimation = new Animation(7, textures.flashGhost[0], textures.flashGhost[1]);
     }
 
+    /**
+     * Update Ghost graphics
+     * @param g Graphics to draw on the screen
+     */
     public void render(Graphics g){
         if(!isFlash) {
             if (up)
@@ -50,6 +60,10 @@ public class Ghost {
         }
     }
 
+    /**
+     * Graphic limits of ghost
+     * @return Ractangle: means the limit of Ghost character
+     */
     public Rectangle getBounds(){
         return new Rectangle((int)x, (int)y, 20, 20);
     }

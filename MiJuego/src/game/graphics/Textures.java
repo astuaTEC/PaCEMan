@@ -3,7 +3,11 @@ package game.graphics;
 import game.Game;
 
 import java.awt.image.BufferedImage;
-
+/**
+ * Textures class
+ * Load game textures
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Textures {
 
     // Characters

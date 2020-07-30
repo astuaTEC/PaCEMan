@@ -1,5 +1,9 @@
 package game.libs;
 
+/**
+ * Class to manage animations
+ * @reference https://www.youtube.com/watch?v=hXImR8Wm53M
+ */
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates

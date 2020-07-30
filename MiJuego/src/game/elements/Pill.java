@@ -6,8 +6,13 @@ import game.graphics.Textures;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Pill class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Pill implements EntityC {
 
+    //Attributes
     double x, y;
     int value;
     Textures textures;
@@ -27,10 +32,18 @@ public class Pill implements EntityC {
 
     }
 
+    /**
+     * Update Pills graphics
+     * @param g Graphics to draw on the screen
+     */
     public void render(Graphics g){
         g.drawImage(pill, (int)x, (int)y, null);
     }
 
+    /**
+     * Graphic limits of pill
+     * @return Ractangle: means the limit of pill element
+     */
     public Rectangle getBounds(){
         return new Rectangle((int)x, (int)y, 20, 20);
     }

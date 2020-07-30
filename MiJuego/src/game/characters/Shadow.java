@@ -5,6 +5,10 @@ import game.graphics.Textures;
 import game.classes.EntityB;
 import game.libs.Animation;
 
+/**
+ * Shadow character class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Shadow extends Ghost implements EntityB {
 
     public Shadow(double x, double y, Textures textures){
@@ -19,6 +23,9 @@ public class Shadow extends Ghost implements EntityB {
         leftAnimation = new Animation(10, textures.shadow[4], textures.shadow[5]);
     }
 
+    /**
+     * Update the graphic movements of Shadow
+     */
     public void tick(){
         y += speed;
         if(y > (Game.HEIGHT * Game.SCALE)){

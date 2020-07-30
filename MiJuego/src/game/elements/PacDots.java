@@ -6,6 +6,10 @@ import game.graphics.Textures;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * PacDots class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class PacDots implements EntityC {
 
     double x, y;
@@ -26,11 +30,18 @@ public class PacDots implements EntityC {
     public void tick(){
 
     }
-
+    /**
+     * Update PacDots graphics
+     * @param g Graphics to draw on the screen
+     */
     public void render(Graphics g){
         g.drawImage(pacDot, (int)x, (int)y, null);
     }
 
+    /**
+     * Graphic limits of pacDots
+     * @return Ractangle: means the limit of PacDots element
+     */
     public Rectangle getBounds(){
         return new Rectangle((int)x, (int)y, 10, 10);
     }

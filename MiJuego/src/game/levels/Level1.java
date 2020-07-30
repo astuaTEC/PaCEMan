@@ -9,9 +9,14 @@ import game.elements.Wall;
 import game.graphics.Textures;
 import java.awt.*;
 
+/**
+ * Level1 class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Level1 {
 
-    private final int[][] level1 = {
+    // logical representation of the level
+    private final Integer[][] level1 = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
             {0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0},
@@ -54,22 +59,27 @@ public class Level1 {
                     c.addEntity(wall);
                 }
                 else if (level1[i][j] == 1){
+                    // Add a PacDot to draw in the screen
                     c.addEntity(new PacDots(j*20, i*20, textures));
                 }
                 else if (level1[i][j] == 3){
+                    // Add a Wall to create limits in the graphic interface
                     c.addEntity(new Wall(j*20, i*20, true));
                 }
                 else if (level1[i][j] == 6){
+                    // Add a Pill to draw in the screen
                     c.addEntity(new Pill(j*20 - 2, i*20 - 5, textures));
                 }
             }
         }
-        for (int x = 0; x < 3; x++){
-            game.lifes.add(new Life(25*x + 785, 325, textures));
+        // Add the PacMan lives to draw in the screen
+        for (int x = 0; x < game.lives; x++){
+            System.out.println("Game lifes: " + game.lives);
+            game.graphicLives.add(new Life(25*x + 785, 325, textures));
         }
     }
     public void render(Graphics g){
-
+        /*
         Graphics2D g2d = (Graphics2D) g;
         g.setColor(Color.WHITE);
 
@@ -83,7 +93,7 @@ public class Level1 {
                     //System.out.println("1");
                 }
             }
-        }
+        }*/
 
     }
 }

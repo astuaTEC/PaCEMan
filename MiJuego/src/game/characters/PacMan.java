@@ -15,11 +15,16 @@ import game.libs.Animation;
 import javax.sound.sampled.AudioInputStream;
 import java.awt.*;
 
+/**
+ * PacMan Character class
+ * @author Saymon Astúa, Oscar Araya
+ */
 
 public class PacMan implements EntityA {
 
-    private double velX = 0;
-    private double velY = 0;
+    // attributes
+    private double velX = 0.0;
+    private double velY = 0.0;
 
     private double x, y;
     private int lifes;
@@ -30,8 +35,7 @@ public class PacMan implements EntityA {
     private Controller c;
     private boolean up, down, right, left, isDeath;
 
-    AudioInputStream audio;
-
+    // Animations
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, deathAnimation;
 
 
@@ -66,6 +70,9 @@ public class PacMan implements EntityA {
 
     }
 
+    /**
+     * Update the graphic movements of PacMan
+     */
     public void tick(){
         x += velX;
         y += velY;
@@ -119,6 +126,8 @@ public class PacMan implements EntityA {
                 if(!tempEnt.isFlash()) {
                     game.death.play();
                     isDeath = true;
+                    game.isDeath = true;
+                    game.deathDelay = System.currentTimeMillis();
                 }
                 else{
                     game.eatGhost.play();
@@ -168,6 +177,10 @@ public class PacMan implements EntityA {
         }
     }
 
+    /**
+     * Update PacMan graphics
+     * @param g Graphics to draw on the screen
+     */
     public void render(Graphics g){
         if(!isDeath){
             if (up)
@@ -184,6 +197,10 @@ public class PacMan implements EntityA {
         }
     }
 
+    /**
+     * Graphic limits of pacman
+     * @return Ractangle: means the limit of PacMan character
+     */
     public Rectangle getBounds(){
         return new Rectangle((int)x, (int)y, 20, 20);
     }

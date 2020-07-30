@@ -2,8 +2,13 @@ package game.classes;
 
 import java.awt.*;
 
+/**
+ *  Ghosts Interface
+ * @author Saymon Astúa, Oscar Araya
+ */
 public interface EntityB {
 
+    //Graphic methods
     public void tick();
     public void render(Graphics g);
     public Rectangle getBounds();

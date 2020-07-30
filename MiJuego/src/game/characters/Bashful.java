@@ -5,6 +5,10 @@ import game.graphics.Textures;
 import game.classes.EntityB;
 import game.libs.Animation;
 
+/**
+ * Bashful character class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Bashful extends Ghost implements EntityB {
 
     public Bashful(double x, double y, Textures textures){
@@ -19,6 +23,9 @@ public class Bashful extends Ghost implements EntityB {
         leftAnimation = new Animation(10, textures.bashful[4], textures.bashful[5]);
     }
 
+    /**
+     * Update the graphic movements of BashFul
+     */
     public void tick(){
         y += speed;
         if(y > (Game.HEIGHT * Game.SCALE)){

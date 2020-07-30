@@ -15,8 +15,15 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * Controller class
+ * controls graphic elements on the screen
+ * @author Saymon Astúa, Oscar Araya
+ */
+
 public class Controller {
 
+    // Attributes
     private LinkedList<EntityA> ea = new LinkedList<>();
     private LinkedList<EntityB> eb = new LinkedList<>();
     private LinkedList<EntityC> ec = new LinkedList<>();
@@ -53,6 +60,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Update the graphic movements of the different elements on the screen
+     */
     public void tick(){
         // A class
         for(int i = 0; i < ea.size(); i++){
@@ -76,6 +86,10 @@ public class Controller {
         }*/
     }
 
+    /**
+     * Update graphics elements on the screen
+     * @param g Graphics to draw on the screen
+     */
     public void render(Graphics g){
         // A class
         for(int i = 0; i < ea.size(); i++){

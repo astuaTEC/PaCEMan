@@ -5,6 +5,10 @@ import game.graphics.Textures;
 import game.classes.EntityB;
 import game.libs.Animation;
 
+/**
+ * Pokey Character class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Pokey extends Ghost implements EntityB {
 
     public Pokey(double x, double y, Textures textures){
@@ -19,6 +23,9 @@ public class Pokey extends Ghost implements EntityB {
         leftAnimation = new Animation(10, textures.pokey[4], textures.pokey[5]);
     }
 
+    /**
+     * Update the graphic movements of Pokey
+     */
     public void tick(){
         y += speed;
         if(y > (Game.HEIGHT * Game.SCALE)){

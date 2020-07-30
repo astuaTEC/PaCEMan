@@ -5,8 +5,13 @@ import game.graphics.Textures;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Life class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Life {
 
+    //Attributes
     double x, y;
     Textures textures;
     BufferedImage life;
@@ -20,6 +25,10 @@ public class Life {
 
     }
 
+    /**
+     * Update Life graphics
+     * @param g Graphics to draw on the screen
+     */
     public void render(Graphics g){
         g.drawImage(life, (int)x, (int)y, null);
     }

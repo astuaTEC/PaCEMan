@@ -4,13 +4,15 @@ import game.classes.WallEntity;
 
 import java.awt.*;
 
+/**
+ * Wall class
+ * @author Saymon Astúa, Oscar Araya
+ */
 public class Wall implements WallEntity {
 
-
+    //Attributes
     private Rectangle rectangle;
-
     private double x, y;
-
     private boolean ghosLicense;
 
     public Wall(double x, double y, boolean ghosLicense) {
@@ -21,6 +23,10 @@ public class Wall implements WallEntity {
         this.rectangle = new Rectangle((int)x, (int)y, 20, 20);
     }
 
+    /**
+     * Graphic limits of wall
+     * @return Ractangle: means the limit of wall element
+     */
     public Rectangle getBounds() {
         return rectangle;
     }
@@ -28,8 +34,8 @@ public class Wall implements WallEntity {
     public void tick(){
 
     }
-    public void render(Graphics g) {
 
+    public void render(Graphics g) {
     }
 
     public double getX() {

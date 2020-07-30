@@ -22,22 +22,30 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedList;
 
+/**
+ * Game controller class
+ * @author Saymon Astúa Madrigal, Oscar Araya
+ */
+
 public class Game extends Canvas implements Runnable {
-    public static final int WIDTH = 900;
-    public static final int HEIGHT = 620;
-    public static final int SCALE = 2;
+
+    // Game constants for the window
+    public static final Integer WIDTH = 900;
+    public static final Integer HEIGHT = 620;
+    public static final Integer SCALE = 2;
     public final String TITLE = "2D GAME";
     private final Font font = new Font("arial", Font.BOLD, 25);
 
-    private boolean running = false;
+    private Boolean running = false;
     private Thread thread;
 
-    private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+    // game imeges
+    private final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
     private BufferedImage menubg = null;
 
-
+    // Game audio
     public final AudioClip eatFruit = Applet.newAudioClip(getClass().
             getResource("/audio/pacman_eatfruit.wav"));
     public final AudioClip death = Applet.newAudioClip(getClass().
@@ -51,30 +59,40 @@ public class Game extends Canvas implements Runnable {
     private final AudioClip intro = Applet.newAudioClip(getClass().
             getResource("/audio/pacman_intro.wav"));
 
-    private int enemy_cont = 1;
-    private int enemy_killed = 0;
-    public long flashTimer = 0;
-    public boolean isFlahing = false;
+    // Constants to handle the game
+    private Integer enemy_cont = 1;
+    private Integer enemy_killed = 0;
+    public Long flashTimer;
+    public Long deathDelay;
+    public Boolean isFlahing = false;
+    public Boolean isDeath = false;
+    public Integer lives = 3;
 
+    // Some elements in the game
     private PacMan p;
     private Controller c;
     private Textures textures;
     private Menu menu;
     private Level1 level1;
 
+    // Linked List of graphics elements
     public LinkedList<EntityA> ea;
     public LinkedList<EntityB> eb;
     public LinkedList<EntityC> ec;
     public LinkedList<WallEntity> wc;
-    public LinkedList<Life> lifes = new LinkedList<>();
+    public LinkedList<Life> graphicLives = new LinkedList<>();
 
-    public static enum STATE{
+    // State of program
+    public enum STATE{
         MENU,
         GAME
     };
 
     public static STATE State = STATE.MENU;
 
+    /**
+     * Initialize game elements
+     */
     public void init(){
         requestFocus();
         BufferedImageLoader loader = new BufferedImageLoader();
@@ -88,24 +106,20 @@ public class Game extends Canvas implements Runnable {
         }
 
         textures = new Textures(this);
-        c = new Controller(textures);
-        p = new PacMan(282, 460, textures, this, c);
         menu = new Menu();
-        level1 = new Level1(c, textures, this);
-
-        ea = c.getEntityA();
-        eb = c.getEntityB();
-        ec = c.getEntityC();
-        wc = c.getWallEntity();
+        initLevel1();
 
         intro.loop();
 
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput());
 
-        c.createEnemy(enemy_cont);
+        //c.createEnemy(enemy_cont);
     }
 
+    /**
+     * Initialize the thread and the game
+     */
     private synchronized void start(){
         if(running){
             return;
@@ -115,6 +129,9 @@ public class Game extends Canvas implements Runnable {
         thread.start();
     }
 
+    /**
+     * Stops the thread and the game
+     */
     private synchronized void stop(){
         if(!running){
             return;
@@ -128,19 +145,23 @@ public class Game extends Canvas implements Runnable {
         System.exit(1);
     }
 
+    /**
+     * This method controls the game cycle
+     * @ 60 fps
+     */
     @Override
     public void run() {
         init();
-        long lastTime = System.nanoTime();
-        final double amountOfTicks = 60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        int updates = 0;
-        int frames = 0;
-        long timer = System.currentTimeMillis();
+        Long lastTime = System.nanoTime();
+        final Double amountOfTicks = 60.0;
+        Double ns = 1000000000 / amountOfTicks;
+        Double delta = 0.0;
+        Integer updates = 0;
+        Integer frames = 0;
+        Long timer = System.currentTimeMillis();
 
         while (running){
-            long now = System.nanoTime();
+            Long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
             if(delta >= 1){
@@ -164,11 +185,20 @@ public class Game extends Canvas implements Runnable {
                     ghostFlashOff();
                 }
             }
+            if(isDeath){
+                if (System.currentTimeMillis() - deathDelay > 1500) {
+                    isDeath = false;
+                    initLevel1();
+                }
+            }
 
         }
         stop();
     }
 
+    /**
+     * Update the graphic movements of the game
+     */
     private void tick(){
         if(State == STATE.GAME){
             p.tick();
@@ -177,6 +207,9 @@ public class Game extends Canvas implements Runnable {
 
     }
 
+    /**
+     * Update game graphics
+     */
     private void render(){
         BufferStrategy bs = this.getBufferStrategy();
 
@@ -198,7 +231,7 @@ public class Game extends Canvas implements Runnable {
             //level1.render(g);
             p.render(g);
             c.render(g);
-            for (Life life : lifes) life.render(g);
+            for (Life life : graphicLives) life.render(g);
         }
         else if(State == STATE.MENU){
             g.drawImage(menubg, 0, 0, null);
@@ -210,8 +243,12 @@ public class Game extends Canvas implements Runnable {
         bs.show();
     }
 
+    /**
+     * Control the keyboard methods, specifically when a key is pressed
+     * @param e KeyEvent
+     */
     public void keyPressed(KeyEvent e) {
-        int key = e.getExtendedKeyCode();
+        Integer key = e.getExtendedKeyCode();
 
         if(State == STATE.GAME && !p.isDeath()) {
             if (key == KeyEvent.VK_RIGHT) {
@@ -242,8 +279,12 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
+    /**
+     * Control the keyboard methods, specifically when a key is released
+     * @param e KeyEvent
+     */
     public void keyReleased(KeyEvent e) {
-        int key = e.getExtendedKeyCode();
+        Integer key = e.getExtendedKeyCode();
 
         if(key == KeyEvent.VK_RIGHT){
             p.setVelX(0);
@@ -259,6 +300,10 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
+    /**
+     * The principal method of the game
+     * @param args
+     */
     public static void main(String[] args) {
         Game game = new Game();
 
@@ -278,26 +323,6 @@ public class Game extends Canvas implements Runnable {
 
     }
 
-    public BufferedImage getSpriteSheet(){
-        return spriteSheet;
-    }
-
-    public int getEnemy_cont() {
-        return enemy_cont;
-    }
-
-    public void setEnemy_cont(int enemy_cont) {
-        this.enemy_cont = enemy_cont;
-    }
-
-    public int getEnemy_killed() {
-        return enemy_killed;
-    }
-
-    public void setEnemy_killed(int enemy_killed) {
-        this.enemy_killed = enemy_killed;
-    }
-
     public void ghostFlashOn(){
         intermission.loop();
         for (EntityB tempEnt2 : eb) {
@@ -310,4 +335,52 @@ public class Game extends Canvas implements Runnable {
             tempEnt2.setFlash(false);
         }
     }
+
+    /**
+     * This method initialize level 1
+     */
+    public void initLevel1(){
+        if(lives > 0) {
+            lives--;
+            graphicLives.clear();
+        }
+        else {
+            System.out.println("Without lifes");
+            Game.State = STATE.MENU;
+            lives = 2;
+            intro.loop();
+        }
+
+        c = new Controller(textures);
+        p = new PacMan(282, 460, textures, this, c);
+        level1 = new Level1(c, textures, this);
+
+        ea = c.getEntityA();
+        eb = c.getEntityB();
+        ec = c.getEntityC();
+        wc = c.getWallEntity();
+
+        c.createEnemy(enemy_cont);
+    }
+
+    public BufferedImage getSpriteSheet(){
+        return spriteSheet;
+    }
+
+    public Integer getEnemy_cont() {
+        return enemy_cont;
+    }
+
+    public void setEnemy_cont(Integer enemy_cont) {
+        this.enemy_cont = enemy_cont;
+    }
+
+    public Integer getEnemy_killed() {
+        return enemy_killed;
+    }
+
+    public void setEnemy_killed(Integer enemy_killed) {
+        this.enemy_killed = enemy_killed;
+    }
+
 }

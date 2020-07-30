@@ -2,9 +2,13 @@ package game.gameControls;
 
 import game.Game;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+/**
+ * MouseInput class
+ * @author Saymon Astúa, Oscar Araya
+ */
 
 public class MouseInput implements MouseListener {
     @Override
