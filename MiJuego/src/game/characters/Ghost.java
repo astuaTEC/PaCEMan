@@ -1,9 +1,15 @@
 package game.characters;
 
+import game.Controller;
+import game.Game;
+import game.classes.WallEntity;
+import game.graphics.Physics;
 import game.graphics.Textures;
 import game.libs.Animation;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -14,22 +20,27 @@ public class Ghost {
 
     // Attributes
     double x, y;
+    double velX = 0;
+    double velY = 0;
 
     Random r = new Random();
 
     Textures textures;
+    Controller controller;
+    String indication = null;
 
-    int speed = r.nextInt(3) + 1;
+    ArrayList<String> movements = new ArrayList<>();
 
     boolean up, down, right, left, isFlash;
 
     // Animations
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, flashAnimation;
 
-    public Ghost(double x, double y, Textures textures){
+    public Ghost(double x, double y, Textures textures, Controller controller){
         this.x = x;
         this.y = y;
         this.textures = textures;
+        this.controller = controller;
 
         up = false;
         right = false;
@@ -37,7 +48,14 @@ public class Ghost {
         left = false;
         isFlash = false;
 
+        indication = "L";
+
+        velX = 1;
+        velY = 1;
+
         flashAnimation = new Animation(7, textures.flashGhost[0], textures.flashGhost[1]);
+
+        movements.add("R"); movements.add("D"); movements.add("U"); movements.add("L");
     }
 
     /**
@@ -58,6 +76,20 @@ public class Ghost {
         else{
             flashAnimation.drawAnimation(g, x, y, 0);
         }
+    }
+
+    public Point getPos(){
+        Point point = new Point();
+        point.setLocation((int)(x/20), (int)(y/20));
+        //System.out.println("Point--> x: " + point.x + " y: " + point.y);
+        return point;
+
+    }
+
+    public void changeDirection(){
+        int i = r.nextInt(3 + 1);
+        System.out.println(i);
+        indication = movements.get(i);
     }
 
     /**

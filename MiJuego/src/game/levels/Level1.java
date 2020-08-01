@@ -74,7 +74,6 @@ public class Level1 {
         }
         // Add the PacMan lives to draw in the screen
         for (int x = 0; x < game.lives; x++){
-            System.out.println("Game lifes: " + game.lives);
             game.graphicLives.add(new Life(25*x + 785, 325, textures));
         }
     }

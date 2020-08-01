@@ -79,7 +79,7 @@ public class Game extends Canvas implements Runnable {
     public LinkedList<EntityA> ea;
     public LinkedList<EntityB> eb;
     public LinkedList<EntityC> ec;
-    public LinkedList<WallEntity> wc;
+    public LinkedList<WallEntity> we;
     public LinkedList<Life> graphicLives = new LinkedList<>();
 
     // State of program
@@ -358,7 +358,7 @@ public class Game extends Canvas implements Runnable {
         ea = c.getEntityA();
         eb = c.getEntityB();
         ec = c.getEntityC();
-        wc = c.getWallEntity();
+        we = c.getWallEntity();
 
         c.createEnemy(enemy_cont);
     }

@@ -5,14 +5,12 @@ import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
 import game.classes.WallEntity;
-import game.elements.PacDots;
 import game.elements.Pill;
 import game.fruits.*;
 import game.graphics.Physics;
 import game.graphics.Textures;
 import game.libs.Animation;
 
-import javax.sound.sampled.AudioInputStream;
 import java.awt.*;
 
 /**
@@ -23,8 +21,8 @@ import java.awt.*;
 public class PacMan implements EntityA {
 
     // attributes
-    private double velX = 0.0;
-    private double velY = 0.0;
+    private double velX = 0;
+    private double velY = 0;
 
     private double x, y;
     private int lifes;
@@ -98,8 +96,8 @@ public class PacMan implements EntityA {
             y = 580;
 
         // Collisions with walls
-        for(int i = 0; i < game.wc.size(); i++){
-            WallEntity tempEnt = game.wc.get(i);
+        for(int i = 0; i < game.we.size(); i++){
+            WallEntity tempEnt = game.we.get(i);
             if(Physics.Collision(this, tempEnt)){
                 double tempX = tempEnt.getX();
                 double tempY = tempEnt.getY();
@@ -150,6 +148,7 @@ public class PacMan implements EntityA {
                 }
                 else if(tempEnt.getClass().equals(Pill.class)){
                     System.out.println("Pill");
+                    getPos();
                     game.ghostFlashOn();
                     game.flashTimer = System.currentTimeMillis();
                     game.isFlahing = true;
@@ -195,6 +194,14 @@ public class PacMan implements EntityA {
         else {
             deathAnimation.drawAnimation(g, x, y, 0);
         }
+    }
+
+    public Point getPos(){
+        Point point = new Point();
+        point.setLocation((int)(x/20), (int)(y/20));
+        System.out.println("Point--> x: " + point.x + " y: " + point.y);
+        return point;
+
     }
 
     /**

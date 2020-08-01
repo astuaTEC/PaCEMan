@@ -36,5 +36,13 @@ public class Physics {
         return false;
     }
 
+    // Collision of EntityB with wallEntity
+    public static boolean Collision(EntityB entityB, WallEntity wallEntity){
+        if(entityB.getBounds().intersects(wallEntity.getBounds())){
+            return true;
+        }
+        return false;
+    }
+
 
 }
