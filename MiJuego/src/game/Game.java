@@ -69,7 +69,7 @@ public class Game extends Canvas implements Runnable {
     public Integer lives = 3;
 
     // Some elements in the game
-    private PacMan p;
+    public PacMan p;
     private Controller c;
     private Textures textures;
     private Menu menu;
@@ -228,7 +228,7 @@ public class Game extends Canvas implements Runnable {
             g.setFont(font);
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(p.getPoints()), 795, 253);
-            //level1.render(g);
+            level1.render(g);
             p.render(g);
             c.render(g);
             for (Life life : graphicLives) life.render(g);
@@ -324,7 +324,7 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void ghostFlashOn(){
-        intermission.loop();
+        //intermission.loop();
         for (EntityB tempEnt2 : eb) {
             tempEnt2.setFlash(true);
         }
@@ -352,7 +352,7 @@ public class Game extends Canvas implements Runnable {
         }
 
         c = new Controller(textures);
-        p = new PacMan(282, 460, textures, this, c);
+        p = new PacMan(280, 460, textures, this, c);
         level1 = new Level1(c, textures, this);
 
         ea = c.getEntityA();

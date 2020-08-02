@@ -1,15 +1,14 @@
 package game.characters;
 
 import game.Controller;
-import game.Game;
-import game.classes.WallEntity;
-import game.graphics.Physics;
+import game.algorithm.Algorithm;
+import game.algorithm.FindPath;
+import game.algorithm.Node;
 import game.graphics.Textures;
 import game.libs.Animation;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -31,6 +30,8 @@ public class Ghost {
 
     ArrayList<String> movements = new ArrayList<>();
 
+    public Algorithm algorithm = new Algorithm();
+
     boolean up, down, right, left, isFlash;
 
     // Animations
@@ -48,7 +49,7 @@ public class Ghost {
         left = false;
         isFlash = false;
 
-        indication = "L";
+        indication = "U";
 
         velX = 1;
         velY = 1;
@@ -63,6 +64,16 @@ public class Ghost {
      * @param g Graphics to draw on the screen
      */
     public void render(Graphics g){
+        // Draw full path
+        /*for(Node n : FindPath.closedList) {
+            int i = n.getRow();
+            int j = n.getCol();
+            g.setColor(Color.GREEN);
+            g.fillRect(20 * j, 20 * i, 20, 20);
+            g.setColor(Color.darkGray);
+            g.drawRect(20 * j, 20 * i, 20, 20);
+        }*/
+
         if(!isFlash) {
             if (up)
                 upAnimation.drawAnimation(g, x, y, 0);
@@ -76,19 +87,18 @@ public class Ghost {
         else{
             flashAnimation.drawAnimation(g, x, y, 0);
         }
+
     }
 
     public Point getPos(){
         Point point = new Point();
         point.setLocation((int)(x/20), (int)(y/20));
-        //System.out.println("Point--> x: " + point.x + " y: " + point.y);
         return point;
 
     }
 
     public void changeDirection(){
         int i = r.nextInt(3 + 1);
-        System.out.println(i);
         indication = movements.get(i);
     }
 

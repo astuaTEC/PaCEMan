@@ -1,9 +1,6 @@
 package game;
 
-import game.characters.Bashful;
-import game.characters.Pokey;
-import game.characters.Shadow;
-import game.characters.Speedy;
+import game.characters.*;
 import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
@@ -28,6 +25,7 @@ public class Controller {
     private LinkedList<EntityB> eb = new LinkedList<>();
     private LinkedList<EntityC> ec = new LinkedList<>();
     private LinkedList<WallEntity> we = new LinkedList<>();
+    private LinkedList<Point> specificPoints = new LinkedList<>();
 
     Random r = new Random();
 
@@ -36,14 +34,17 @@ public class Controller {
     EntityC entC;
     WallEntity wallEntity;
 
+    public Point pacManPos;
+
     private Textures textures;
 
     public Controller(Textures textures){
         this.textures = textures;
-        addEntity(new Shadow(250, 260, textures, this));
+
         addEntity(new Speedy(240, 260, textures, this));
         addEntity(new Bashful(60, 20, textures, this));
         addEntity(new Pokey(260, 260, textures, this));
+        addEntity(new Shadow(280, 220, textures, this));
 
         addEntity(new Banana(3, 2, 25, textures));
         addEntity(new Cherry(4, 2, 25, textures));
@@ -116,6 +117,9 @@ public class Controller {
     public void addEntity(EntityA block){
         ea.add(block);
     }
+    public void addPoint(Point block){
+        specificPoints.add(block);
+    }
     public void removeEntity(EntityA block){
         ea.remove(block);
     }
@@ -150,4 +154,13 @@ public class Controller {
     public LinkedList<WallEntity> getWallEntity(){
         return we;
     }
+
+    public LinkedList<Point> getSpecificPoints() {
+        return specificPoints;
+    }
+
+    public void setPacManPos(Point pacManPos) {
+        this.pacManPos = pacManPos;
+    }
+
 }

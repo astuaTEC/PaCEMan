@@ -12,6 +12,7 @@ import game.graphics.Textures;
 import game.libs.Animation;
 
 import java.awt.*;
+import java.util.LinkedList;
 
 /**
  * PacMan Character class
@@ -33,6 +34,8 @@ public class PacMan implements EntityA {
     private Controller c;
     private boolean up, down, right, left, isDeath;
 
+    private LinkedList<Point> specificPoints = new LinkedList<>();
+
     // Animations
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, deathAnimation;
 
@@ -44,6 +47,9 @@ public class PacMan implements EntityA {
         this.game = game;
         this.c = c;
         this.lifes = 3;
+        this.specificPoints = c.getSpecificPoints();
+
+        c.setPacManPos(new Point((int)(x/20), (int)(y/20)));
 
         up = false;
         right = true;
@@ -72,6 +78,8 @@ public class PacMan implements EntityA {
      * Update the graphic movements of PacMan
      */
     public void tick(){
+
+        updatePos();
         x += velX;
         y += velY;
 
@@ -90,10 +98,6 @@ public class PacMan implements EntityA {
             else
                 x = 540;
         }
-        if(y <= 0)
-            y = 0;
-        if(y >= 580)
-            y = 580;
 
         // Collisions with walls
         for(int i = 0; i < game.we.size(); i++){
@@ -122,10 +126,10 @@ public class PacMan implements EntityA {
             if(Physics.Collision(this, tempEnt)){
                 System.out.println("Collision");
                 if(!tempEnt.isFlash()) {
-                    game.death.play();
-                    isDeath = true;
-                    game.isDeath = true;
-                    game.deathDelay = System.currentTimeMillis();
+                    //game.death.play();
+                    //isDeath = true;
+                    //game.isDeath = true;
+                    //game.deathDelay = System.currentTimeMillis();
                 }
                 else{
                     game.eatGhost.play();
@@ -148,13 +152,13 @@ public class PacMan implements EntityA {
                 }
                 else if(tempEnt.getClass().equals(Pill.class)){
                     System.out.println("Pill");
-                    getPos();
+                    //getPos();
                     game.ghostFlashOn();
                     game.flashTimer = System.currentTimeMillis();
                     game.isFlahing = true;
                 }
                 else {
-                    game.munch.play();
+                    //game.munch.play();
                 }
 
                 c.removeEntity(tempEnt);
@@ -199,7 +203,6 @@ public class PacMan implements EntityA {
     public Point getPos(){
         Point point = new Point();
         point.setLocation((int)(x/20), (int)(y/20));
-        System.out.println("Point--> x: " + point.x + " y: " + point.y);
         return point;
 
     }
@@ -210,6 +213,25 @@ public class PacMan implements EntityA {
      */
     public Rectangle getBounds(){
         return new Rectangle((int)x, (int)y, 20, 20);
+    }
+
+    public void updatePos(){
+        Point sp = specificPos();
+        if(sp != null){
+            c.setPacManPos(sp);
+        }
+
+    }
+
+    public Point specificPos(){
+        Point pos = getPos();
+        for(Point p : specificPoints) {
+            if (pos.equals(p)) {
+
+                return p;
+            }
+        }
+        return null;
     }
 
     public double getX() {

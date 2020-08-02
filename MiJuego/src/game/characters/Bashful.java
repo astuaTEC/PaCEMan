@@ -20,6 +20,7 @@ public class Bashful extends Ghost implements EntityB {
 
     LinkedList<Point> points = new LinkedList<>();
 
+
     public Bashful(double x, double y, Textures textures, Controller controller){
         super(x, y, textures, controller);
 
@@ -154,10 +155,10 @@ public class Bashful extends Ghost implements EntityB {
                 rute.add("D");
             }
         }
-        System.out.print("Rute:");
+        /*System.out.print("Rute:");
         for(int j = 0; j < rute.size(); j++){
             System.out.print(" --> " + rute.get(j));
-        }
+        }*/
     }
 
     public void getNextPoint(Point a) {
