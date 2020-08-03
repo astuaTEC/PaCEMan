@@ -9,6 +9,7 @@ import game.libs.Animation;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -29,6 +30,11 @@ public class Ghost {
     String indication = null;
 
     ArrayList<String> movements = new ArrayList<>();
+    public LinkedList<Point> specificPoints;
+    public ArrayList<Node> closedList = new ArrayList<Node>();
+    public LinkedList<Point> points = new LinkedList<>();
+
+    public Point destiny;
 
     public Algorithm algorithm = new Algorithm();
 
@@ -42,6 +48,7 @@ public class Ghost {
         this.y = y;
         this.textures = textures;
         this.controller = controller;
+        this.specificPoints = controller.getSpecificPoints();
 
         up = false;
         right = false;
@@ -49,7 +56,9 @@ public class Ghost {
         left = false;
         isFlash = false;
 
-        indication = "U";
+        indication = "R";
+
+        destiny = new Point(14, 23);
 
         velX = 1;
         velY = 1;
@@ -64,15 +73,6 @@ public class Ghost {
      * @param g Graphics to draw on the screen
      */
     public void render(Graphics g){
-        // Draw full path
-        /*for(Node n : FindPath.closedList) {
-            int i = n.getRow();
-            int j = n.getCol();
-            g.setColor(Color.GREEN);
-            g.fillRect(20 * j, 20 * i, 20, 20);
-            g.setColor(Color.darkGray);
-            g.drawRect(20 * j, 20 * i, 20, 20);
-        }*/
 
         if(!isFlash) {
             if (up)
@@ -92,7 +92,7 @@ public class Ghost {
 
     public Point getPos(){
         Point point = new Point();
-        point.setLocation((int)(x/20), (int)(y/20));
+        point.setLocation((int)((x)/20), (int)((y)/20));
         return point;
 
     }
@@ -108,6 +108,93 @@ public class Ghost {
      */
     public Rectangle getBounds(){
         return new Rectangle((int)x, (int)y, 20, 20);
+    }
+
+    public void move(){
+        switch (indication) {
+            case "R":
+                up = false;
+                right = true;
+                down = false;
+                left = false;
+                x += velX;
+                break;
+            case "L":
+                up = false;
+                right = false;
+                down = false;
+                left = true;
+                x -= velX;
+                break;
+            case "D":
+                up = false;
+                right = false;
+                down = true;
+                left = false;
+                y += velY;
+                break;
+            case "U":
+                up = true;
+                right = false;
+                down = false;
+                left = false;
+                y -= velY;
+                break;
+        }
+    }
+    public void getNextPoint(Point a) {
+        if (points.size() > 0) {
+            Point b = points.get(0);
+            if (a.x == b.x && a.y == b.y){
+                points.removeFirst();
+            }
+            else if (a.y == b.y && specificPoints.contains(a)) {
+                if (a.x < b.x ) {
+                    indication = "R";
+                } else {
+                    indication = "L";
+                }
+            }
+            else if (a.x == b.x && specificPoints.contains(a)) {
+                if (a.y > b.y ) {
+                    indication = "U";
+                }  else {
+                    indication = "D";
+                }
+            }
+        }
+    }
+
+    public void verifyRute(){
+        if(!destiny.equals(controller.pacManPos) && controller.pacManPos != null){
+            Point start = getPos();
+            destiny = controller.pacManPos;
+            if(!start.equals(destiny) && verifyAstar(start, destiny) && specificPoints.contains(start)) {
+                algorithm.setStart(new Node(start.y, start.x));
+                algorithm.setEnd(new Node(destiny.y, destiny.x));
+                getRute();
+            }
+        }
+    }
+
+    public void getRute(){
+        points.clear();
+        closedList.clear();
+        algorithm.run();
+        closedList = algorithm.A.getClosedList();
+        for(int i = 0; i < closedList.size(); i++){
+            Node node = closedList.get(i);
+            points.add(new Point(node.getCol(), node.getRow()));
+        }
+
+    }
+
+    public boolean verifyAstar(Point a, Point b){
+        if (Math.abs(a.x - b.x) > 2 || Math.abs(a.y - b.y) > 2)
+            return Math.abs(a.x - b.x) < 8 && Math.abs(a.y - b.y) < 8;
+        else
+            return false;
+
     }
 
     public double getX() {

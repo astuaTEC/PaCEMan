@@ -2,6 +2,7 @@ package game.characters;
 
 import game.Controller;
 import game.Game;
+import game.algorithm.Node;
 import game.classes.WallEntity;
 import game.graphics.Physics;
 import game.graphics.Textures;
@@ -32,73 +33,34 @@ public class Bashful extends Ghost implements EntityB {
 
         leftAnimation = new Animation(10, textures.bashful[4], textures.bashful[5]);
 
-        for(int i = 2; i < 14; i++){
-            points.add(new Point(i, 1));
-        }
-        points.add(new Point(13, 2));
-        getRute();
+        destiny = new Point(14, 23);
     }
 
     /**
      * Update the graphic movements of BashFul
      */
     public void tick(){
+        verifyRute();
         Point a = getPos();
+
         getNextPoint(a);
+        move();
 
-        switch (indication) {
-            case "R":
-                up = false;
-                right = true;
-                down = false;
-                left = false;
-                x += velX;
-                break;
-            case "L":
-                up = false;
-                right = false;
-                down = false;
-                left = true;
-                x -= velX;
-                break;
-            case "D":
-                up = false;
-                right = false;
-                down = true;
-                left = false;
-                y += velY;
-                break;
-            case "U":
-                up = true;
-                right = false;
-                down = false;
-                left = false;
-                y -= velY;
-                break;
-        }
-
-        //x += velX;
-       // y += velY;
 
         if(x <= 20) {
             //right warp
-            if (y >= 280 && y < 300)
-                x = 530;
-            else
+            if (y >= 280 && y < 300) {
                 x = 20;
-        }
-        if (x >= 550) {
-            //left warp
-            if(y >= 280 && y < 300) {
-                x = 20;
+                changeDirection();
             }
-            else
-                x = 550;
+
         }
-        if(y <= 0)
-            y = 0;
-        if(y >= 580)
-            y = 580;
+        if (x >= 450) {
+            if(y >= 280 && y < 300) {
+                x = 440;
+                changeDirection();
+            }
+        }
 
         // Collisions with walls
         LinkedList<WallEntity> we = controller.getWallEntity();
@@ -119,6 +81,7 @@ public class Bashful extends Ghost implements EntityB {
                 if (tempY < y) {
                     y = tempY + 20;
                 }
+                changeDirection();
             }
         }
 
@@ -138,46 +101,15 @@ public class Bashful extends Ghost implements EntityB {
     }
 
     public void getRute(){
-        LinkedList<String> rute = new LinkedList<>();
-        for(int i = 0; i + 1 < points.size(); i++){
-            Point p1 = points.get(i);
-            Point p2 = points.get(i + 1);
-            if(p1.x < p2.x){
-                rute.add("R");
-            }
-            else if(p1.x > p2.x){
-                rute.add("L");
-            }
-            else if(p1.y > p2.y){
-                rute.add("U");
-            }
-            else if(p1.y < p2.y){
-                rute.add("D");
-            }
+        points.clear();
+        closedList.clear();
+        algorithm.run();
+        closedList = algorithm.A.getClosedList();
+        for(int i = 0; i < closedList.size(); i++){
+            Node node = closedList.get(i);
+            points.add(new Point(node.getCol(), node.getRow()));
         }
-        /*System.out.print("Rute:");
-        for(int j = 0; j < rute.size(); j++){
-            System.out.print(" --> " + rute.get(j));
-        }*/
+
     }
 
-    public void getNextPoint(Point a) {
-        if (points.size() > 0) {
-            Point b = points.get(0);
-            if (a.x != b.x || a.y != b.y) {
-                if (a.x < b.x) {
-                    indication = "R";
-                } else if (a.x > b.x) {
-                    indication = "L";
-                } else if (a.y > b.y) {
-                    indication = "U";
-                } else if (a.y < b.y) {
-                    indication = "D";
-                }
-            }
-            else {
-                points.removeFirst();
-            }
-        }
-    }
 }

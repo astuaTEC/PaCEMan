@@ -80,6 +80,8 @@ public class PacMan implements EntityA {
     public void tick(){
 
         updatePos();
+        updateMovement();
+
         x += velX;
         y += velY;
 
@@ -127,9 +129,9 @@ public class PacMan implements EntityA {
                 System.out.println("Collision");
                 if(!tempEnt.isFlash()) {
                     //game.death.play();
-                    //isDeath = true;
-                    //game.isDeath = true;
-                    //game.deathDelay = System.currentTimeMillis();
+                    isDeath = true;
+                    game.isDeath = true;
+                    game.deathDelay = System.currentTimeMillis();
                 }
                 else{
                     game.eatGhost.play();
@@ -148,7 +150,7 @@ public class PacMan implements EntityA {
                 if(tempEnt.getClass().equals(Banana.class) || tempEnt.getClass().equals(Pineapple.class) ||
                         tempEnt.getClass().equals(Cherry.class) || tempEnt.getClass().equals(Strawberry.class) ||
                         tempEnt.getClass().equals(Apple.class) || tempEnt.getClass().equals(Orange.class) ){
-                    game.eatFruit.play();
+                    //game.eatFruit.play();
                 }
                 else if(tempEnt.getClass().equals(Pill.class)){
                     System.out.println("Pill");
@@ -202,7 +204,7 @@ public class PacMan implements EntityA {
 
     public Point getPos(){
         Point point = new Point();
-        point.setLocation((int)(x/20), (int)(y/20));
+        point.setLocation((int)((x+10)/20), (int)((y+10)/20));
         return point;
 
     }
@@ -232,6 +234,12 @@ public class PacMan implements EntityA {
             }
         }
         return null;
+    }
+    void updateMovement(){
+        c.left = left;
+        c.right = right;
+        c.up = up;
+        c.down = down;
     }
 
     public double getX() {

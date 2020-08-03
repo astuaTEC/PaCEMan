@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class FindPath {
 	
-	public ArrayList<Node> closedList = new ArrayList<Node>();
+	public  ArrayList<Node> closedList;
 	private ArrayList<Node> neighbourList = new ArrayList<Node>();
 	private Dist calcDist = new Dist();
 	private Node start;
@@ -16,6 +16,7 @@ public class FindPath {
 	this.map = map;
 	this.start = start;
 	this.end = end;
+	this.closedList = new ArrayList<>();
 	closedList.add(start);
 	
 	System.out.println("Starting from: (" + start.getRow() +","+ start.getCol()+")");
@@ -33,26 +34,15 @@ public class FindPath {
 	} while((closedList.get(closedList.size() -1).getRow() != end.getRow()) || (closedList.get(closedList.size() -1).getCol() != end.getCol()));
 	
 	// print closed list when done
-	for(int i = 0; i < closedList.size(); i++) {
+	/*for(int i = 0; i < closedList.size(); i++) {
 		System.out.print("-> (" + closedList.get(i).getRow() + "," + closedList.get(i).getCol() + ") ");
-	}
+	}*/
 }
 	private void populateNeighboursList(Node n) {
 		int row = n.getRow();
 		int col = n.getCol();
 		
-		// Check Upper side
-		if(row > 0){
-			if(col > 0) {
-				if(map[row-1][col-1] == 1) {neighbourList.add(new Node(row-1, col-1));}
-			}
-			if(map[row-1][col] == 1) {neighbourList.add(new Node(row-1, col));}
-			
-			if(col < map[row].length - 1){
-				if(map[row-1][col+1] == 1 && col < map[row-1].length) {neighbourList.add(new Node(row-1, col+1));}
-			}
-		}
-		
+
 		// Check Lower side
 		if(row < map.length - 1){
 			if(col > 0){
@@ -64,7 +54,19 @@ public class FindPath {
 				if(map[row+1][col+1] == 1 && col < map[row+1].length) {neighbourList.add(new Node(row+1, col+1));}
 			}
 		}
-		
+
+		// Check Upper side
+		if(row > 0){
+			if(col > 0) {
+				if(map[row-1][col-1] == 1) {neighbourList.add(new Node(row-1, col-1));}
+			}
+			if(map[row-1][col] == 1) {neighbourList.add(new Node(row-1, col));}
+
+			if(col < map[row].length - 1){
+				if(map[row-1][col+1] == 1 && col < map[row-1].length) {neighbourList.add(new Node(row-1, col+1));}
+			}
+		}
+
 		// Check Middle
 		if(col < map[row].length - 1){
 			if(map[row][col+1] == 1){ neighbourList.add(new Node(row, col+1));}

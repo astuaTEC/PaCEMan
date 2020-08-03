@@ -21,7 +21,7 @@ public class Pill implements EntityC {
     public Pill(double x, double y, Textures textures){
         this.x = x;
         this.y = y;
-        this.value = 10;
+        this.value = 50;
         this.textures = textures;
 
         this.pill = textures.pill[0];

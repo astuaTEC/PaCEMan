@@ -27,6 +27,8 @@ public class Controller {
     private LinkedList<WallEntity> we = new LinkedList<>();
     private LinkedList<Point> specificPoints = new LinkedList<>();
 
+    public boolean up, down, right, left, isDeath;
+
     Random r = new Random();
 
     EntityA entA;
@@ -41,8 +43,8 @@ public class Controller {
     public Controller(Textures textures){
         this.textures = textures;
 
-        addEntity(new Speedy(240, 260, textures, this));
-        addEntity(new Bashful(60, 20, textures, this));
+        addEntity(new Speedy(260, 220, textures, this));
+        addEntity(new Bashful(240, 220, textures, this));
         addEntity(new Pokey(260, 260, textures, this));
         addEntity(new Shadow(280, 220, textures, this));
 
@@ -135,9 +137,8 @@ public class Controller {
     public void removeEntity(EntityC block){
         ec.remove(block);
     }
-    public void addEntity(WallEntity block){
-        we.add(block);
-    }
+    public void addEntity(WallEntity block) { we.add(block); }
+
     public void removeEntity(WallEntity block){
         we.remove(block);
     }
@@ -155,12 +156,8 @@ public class Controller {
         return we;
     }
 
-    public LinkedList<Point> getSpecificPoints() {
-        return specificPoints;
-    }
+    public LinkedList<Point> getSpecificPoints() { return specificPoints;}
 
-    public void setPacManPos(Point pacManPos) {
-        this.pacManPos = pacManPos;
-    }
+    public void setPacManPos(Point pacManPos) { this.pacManPos = pacManPos;}
 
 }

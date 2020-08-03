@@ -26,8 +26,8 @@ public class Shadow extends Ghost implements EntityB {
     public Shadow(double x, double y, Textures textures, Controller controller){
         super(x, y, textures, controller);
 
-        this.velX = 0.5;
-        this.velY = 0.5;
+        this.velX = 1;
+        this.velY = 1;
 
         destiny = new Point(14, 23);
 
@@ -39,7 +39,6 @@ public class Shadow extends Ghost implements EntityB {
 
         leftAnimation = new Animation(10, textures.shadow[4], textures.shadow[5]);
 
-        //getRute();
     }
 
     /**
@@ -48,15 +47,29 @@ public class Shadow extends Ghost implements EntityB {
     public void tick(){
         verifyRute();
         Point a = getPos();
-        getNextPoint(a);
 
+        getNextPoint(a);
         move();
+
+        if(x <= 20) {
+            //right warp
+            if (y >= 280 && y < 300) {
+                x = 20;
+                changeDirection();
+            }
+
+        }
+        if (x >= 450) {
+            if(y >= 280 && y < 300) {
+                x = 440;
+                changeDirection();
+            }
+        }
 
         // Collisions with walls
         LinkedList<WallEntity> we = controller.getWallEntity();
-        for(int i = 0; i < we.size(); i++){
-            WallEntity tempEnt = we.get(i);
-            if(Physics.Collision(this, tempEnt) && !tempEnt.isGhosLicense()){
+        for (WallEntity tempEnt : we) {
+            if (Physics.Collision(this, tempEnt) && !tempEnt.isGhosLicense()) {
                 double tempX = tempEnt.getX();
                 double tempY = tempEnt.getY();
                 if (tempX > x) {
@@ -71,8 +84,10 @@ public class Shadow extends Ghost implements EntityB {
                 if (tempY < y) {
                     y = tempY + 20;
                 }
+                changeDirection();
             }
         }
+
         if(!isFlash) {
             if (up)
                 upAnimation.runAnimation();
@@ -90,6 +105,7 @@ public class Shadow extends Ghost implements EntityB {
 
     public void getRute(){
         points.clear();
+        closedList.clear();
         algorithm.run();
         closedList = algorithm.A.getClosedList();
         for(int i = 0; i < closedList.size(); i++){
@@ -105,17 +121,17 @@ public class Shadow extends Ghost implements EntityB {
             if (a.x == b.x && a.y == b.y){
                 points.removeFirst();
             }
-            if (a.x != b.x) {
-                if (a.x < b.x) {
+            else if (a.y == b.y && specificPoints.contains(a)) {
+                if (a.x < b.x ) {
                     indication = "R";
                 } else {
                     indication = "L";
                 }
             }
-             if (a.x == b.x ) {
+            else if (a.x == b.x && specificPoints.contains(a)) {
                 if (a.y > b.y ) {
                     indication = "U";
-                }  else if (a.y < b.y) {
+                }  else {
                     indication = "D";
                 }
             }
@@ -124,43 +140,52 @@ public class Shadow extends Ghost implements EntityB {
 
     public void verifyRute(){
         if(!destiny.equals(controller.pacManPos) && controller.pacManPos != null){
+            Point start = getPos();
             destiny = controller.pacManPos;
-            algorithm.setStart(new Node((int)(y/20), (int)(x/20)));
-            algorithm.setEnd(new Node(destiny.y, destiny.x));
-            getRute();
+            if(!start.equals(destiny) && verifyAstar(start, destiny) && specificPoints.contains(start)) {
+                algorithm.setStart(new Node(start.y, start.x));
+                algorithm.setEnd(new Node(destiny.y, destiny.x));
+                getRute();
+            }
+        }
+    }
+
+    /**
+     * Update Ghost graphics
+     * @param g Graphics to draw on the screen
+     */
+    public void render(Graphics g){
+        //closedList = algorithm.A.getClosedList();
+        // Draw full path
+        for(Node n : closedList) {
+            int i = n.getRow();
+            int j = n.getCol();
+            g.setColor(Color.RED);
+            g.fillRect(20 * j, 20 * i, 20, 20);
+        }
+
+        if(!isFlash) {
+            if (up)
+                upAnimation.drawAnimation(g, x, y, 0);
+            if (down)
+                downAnimation.drawAnimation(g, x, y, 0);
+            if (left)
+                leftAnimation.drawAnimation(g, x, y, 0);
+            if (right)
+                rightAnimation.drawAnimation(g, x, y, 0);
+        }
+        else{
+            flashAnimation.drawAnimation(g, x, y, 0);
         }
 
     }
-    public void move(){
-        switch (indication) {
-            case "R":
-                up = false;
-                right = true;
-                down = false;
-                left = false;
-                x += velX;
-                break;
-            case "L":
-                up = false;
-                right = false;
-                down = false;
-                left = true;
-                x -= velX;
-                break;
-            case "D":
-                up = false;
-                right = false;
-                down = true;
-                left = false;
-                y += velY;
-                break;
-            case "U":
-                up = true;
-                right = false;
-                down = false;
-                left = false;
-                y -= velY;
-                break;
-        }
+
+    public boolean verifyAstar(Point a, Point b){
+
+        if (Math.abs(a.x - b.x) > 2 || Math.abs(a.y - b.y) > 2)
+            return Math.abs(a.x - b.x) < 11 && Math.abs(a.y - b.y) < 14;
+        else
+            return false;
+
     }
 }
