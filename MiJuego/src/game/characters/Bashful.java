@@ -1,10 +1,7 @@
 package game.characters;
 
 import game.Controller;
-import game.Game;
 import game.algorithm.Node;
-import game.classes.WallEntity;
-import game.graphics.Physics;
 import game.graphics.Textures;
 import game.classes.EntityB;
 import game.libs.Animation;
@@ -41,11 +38,11 @@ public class Bashful extends Ghost implements EntityB {
      */
     public void tick(){
         verifyRute();
+
         Point a = getPos();
 
         getNextPoint(a);
         move();
-
 
         if(x <= 20) {
             //right warp
@@ -62,42 +59,9 @@ public class Bashful extends Ghost implements EntityB {
             }
         }
 
-        // Collisions with walls
-        LinkedList<WallEntity> we = controller.getWallEntity();
-       for(int i = 0; i < we.size(); i++){
-            WallEntity tempEnt = we.get(i);
-            if(Physics.Collision(this, tempEnt) && !tempEnt.isGhosLicense()){
-                double tempX = tempEnt.getX();
-                double tempY = tempEnt.getY();
-                if (tempX > x) {
-                    x = tempX - 20;
-                }
-                if (tempX < x) {
-                    x = tempX + 20;
-                }
-                if (tempY > y) {
-                    y = tempY - 20;
-                }
-                if (tempY < y) {
-                    y = tempY + 20;
-                }
-                changeDirection();
-            }
-        }
+        wallCollision();
 
-        if(!isFlash) {
-            if (up)
-                upAnimation.runAnimation();
-            if (down)
-                downAnimation.runAnimation();
-            if (left)
-                leftAnimation.runAnimation();
-            if (right)
-                rightAnimation.runAnimation();
-        }
-        else{
-            flashAnimation.runAnimation();
-        }
+        verifyFhashing();
     }
 
     public void getRute(){
@@ -105,11 +69,9 @@ public class Bashful extends Ghost implements EntityB {
         closedList.clear();
         algorithm.run();
         closedList = algorithm.A.getClosedList();
-        for(int i = 0; i < closedList.size(); i++){
-            Node node = closedList.get(i);
+        for (Node node : closedList) {
             points.add(new Point(node.getCol(), node.getRow()));
         }
-
     }
 
 }

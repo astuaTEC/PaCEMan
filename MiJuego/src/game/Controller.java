@@ -116,6 +116,13 @@ public class Controller {
         }*/
     }
 
+    public void setGhostVel(double vel){
+        for (EntityB entityB : eb) {
+            entB = entityB;
+            entB.setVel(vel);
+        }
+    }
+
     public void addEntity(EntityA block){
         ea.add(block);
     }

@@ -10,7 +10,7 @@ import game.gameControls.KeyInput;
 import game.gameControls.MouseInput;
 import game.graphics.BufferedImageLoader;
 import game.graphics.Textures;
-import game.levels.Level1;
+import game.levels.Map_1;
 
 import javax.swing.*;
 import java.applet.Applet;
@@ -32,8 +32,6 @@ public class Game extends Canvas implements Runnable {
     // Game constants for the window
     public static final Integer WIDTH = 900;
     public static final Integer HEIGHT = 620;
-    public static final Integer SCALE = 2;
-    public final String TITLE = "2D GAME";
     private final Font font = new Font("arial", Font.BOLD, 25);
 
     private Boolean running = false;
@@ -67,13 +65,18 @@ public class Game extends Canvas implements Runnable {
     public Boolean isFlahing = false;
     public Boolean isDeath = false;
     public Integer lives = 3;
+    public Integer pacDotPoints = 0;
+    private Double velLevel_1 = 1.0;
+    private Double velLevel_2 = 1.5;
+    private Double velLevel_3 = 2.0;
+    public Integer levelNum = 1;
 
     // Some elements in the game
     public PacMan p;
     private Controller c;
     private Textures textures;
     private Menu menu;
-    private Level1 level1;
+    private Map_1 map1;
 
     // Linked List of graphics elements
     public LinkedList<EntityA> ea;
@@ -153,7 +156,7 @@ public class Game extends Canvas implements Runnable {
     public void run() {
         init();
         Long lastTime = System.nanoTime();
-        final Double amountOfTicks = 60.0;
+        final Double amountOfTicks = 50.0;
         Double ns = 1000000000 / amountOfTicks;
         Double delta = 0.0;
         Integer updates = 0;
@@ -188,7 +191,25 @@ public class Game extends Canvas implements Runnable {
             if(isDeath){
                 if (System.currentTimeMillis() - deathDelay > 1500) {
                     isDeath = false;
-                    initLevel1();
+                    if(levelNum == 1) {
+                        pacDotPoints = 0;
+                        initLevel1();
+                    }
+                    else if(levelNum == 2){
+                        pacDotPoints = 0;
+                        initLevel2();
+                    }
+                    else if(levelNum == 3){
+                        pacDotPoints = 0;
+                        initLevel3();
+                    }
+                    else{
+                        Game.State = STATE.MENU;
+                        lives = 3;
+                        levelNum = 1;
+                        initLevel1();
+                    }
+
                 }
             }
 
@@ -228,7 +249,8 @@ public class Game extends Canvas implements Runnable {
             g.setFont(font);
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(p.getPoints()), 795, 253);
-            level1.render(g);
+            g.drawString("Level: " + levelNum, 785, 400);
+            //map1.render(g);
             p.render(g);
             c.render(g);
             for (Life life : graphicLives) life.render(g);
@@ -353,14 +375,91 @@ public class Game extends Canvas implements Runnable {
 
         c = new Controller(textures);
         p = new PacMan(280, 460, textures, this, c);
-        level1 = new Level1(c, textures, this);
+        map1 = new Map_1(c, textures, this);
+        c.setGhostVel(velLevel_1);
 
         ea = c.getEntityA();
         eb = c.getEntityB();
         ec = c.getEntityC();
         we = c.getWallEntity();
 
-        c.createEnemy(enemy_cont);
+    }
+
+    /**
+     * This method initialize level 2
+     */
+    public void initLevel2(){
+        if(lives > 0) {
+            lives--;
+            graphicLives.clear();
+        }
+        else {
+            System.out.println("Without lifes");
+            Game.State = STATE.MENU;
+            lives = 2;
+            intro.loop();
+        }
+
+        c = new Controller(textures);
+        p = new PacMan(280, 460, textures, this, c);
+        map1 = new Map_1(c, textures, this);
+        c.setGhostVel(velLevel_2);
+
+        ea = c.getEntityA();
+        eb = c.getEntityB();
+        ec = c.getEntityC();
+        we = c.getWallEntity();
+
+    }
+
+    /**
+     * This method initialize level 3
+     */
+    public void initLevel3(){
+        if(lives > 0) {
+            lives--;
+            graphicLives.clear();
+        }
+        else {
+            System.out.println("Without lifes");
+            Game.State = STATE.MENU;
+            lives = 2;
+            intro.loop();
+        }
+
+        c = new Controller(textures);
+        p = new PacMan(280, 460, textures, this, c);
+        map1 = new Map_1(c, textures, this);
+        c.setGhostVel(velLevel_3);
+
+        ea = c.getEntityA();
+        eb = c.getEntityB();
+        ec = c.getEntityC();
+        we = c.getWallEntity();
+
+    }
+
+    public void selectLevel(){
+        if(levelNum == 1) {
+            lives = 3;
+            initLevel1();
+        }
+        else if(levelNum == 2){
+            //initLevel2
+            lives = 3;
+            initLevel2();
+        }
+        else if(levelNum == 3){
+            //initLevel3
+            lives = 3;
+            initLevel3();
+        }
+        else{
+            Game.State = STATE.MENU;
+            lives = 3;
+            levelNum = 1;
+            initLevel1();
+        }
     }
 
     public BufferedImage getSpriteSheet(){

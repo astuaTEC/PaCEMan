@@ -17,5 +17,7 @@ public interface EntityB {
     public double getY();
     public boolean isFlash();
     public void setFlash(boolean flash);
+    public void setRender(boolean flash);
+    public void setVel(double vel);
 
 }

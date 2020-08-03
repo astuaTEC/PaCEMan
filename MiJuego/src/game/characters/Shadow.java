@@ -65,42 +65,9 @@ public class Shadow extends Ghost implements EntityB {
                 changeDirection();
             }
         }
+        wallCollision();
 
-        // Collisions with walls
-        LinkedList<WallEntity> we = controller.getWallEntity();
-        for (WallEntity tempEnt : we) {
-            if (Physics.Collision(this, tempEnt) && !tempEnt.isGhosLicense()) {
-                double tempX = tempEnt.getX();
-                double tempY = tempEnt.getY();
-                if (tempX > x) {
-                    x = tempX - 20;
-                }
-                if (tempX < x) {
-                    x = tempX + 20;
-                }
-                if (tempY > y) {
-                    y = tempY - 20;
-                }
-                if (tempY < y) {
-                    y = tempY + 20;
-                }
-                changeDirection();
-            }
-        }
-
-        if(!isFlash) {
-            if (up)
-                upAnimation.runAnimation();
-            if (down)
-                downAnimation.runAnimation();
-            if (left)
-                leftAnimation.runAnimation();
-            if (right)
-                rightAnimation.runAnimation();
-        }
-        else{
-            flashAnimation.runAnimation();
-        }
+        verifyFhashing();
     }
 
     public void getRute(){
@@ -139,7 +106,7 @@ public class Shadow extends Ghost implements EntityB {
     }
 
     public void verifyRute(){
-        if(!destiny.equals(controller.pacManPos) && controller.pacManPos != null){
+        if(!destiny.equals(controller.pacManPos) && controller.pacManPos != null && !isFlash){
             Point start = getPos();
             destiny = controller.pacManPos;
             if(!start.equals(destiny) && verifyAstar(start, destiny) && specificPoints.contains(start)) {
@@ -177,7 +144,6 @@ public class Shadow extends Ghost implements EntityB {
         else{
             flashAnimation.drawAnimation(g, x, y, 0);
         }
-
     }
 
     public boolean verifyAstar(Point a, Point b){

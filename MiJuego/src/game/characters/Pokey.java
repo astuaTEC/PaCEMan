@@ -36,97 +36,28 @@ public class Pokey extends Ghost implements EntityB {
     /**
      * Update the graphic movements of Pokey
      */
-    public void tick(){
+    public void tick() {
 
-        switch (indication) {
-            case "R":
-                up = false;
-                right = true;
-                down = false;
-                left = false;
-                x += velX;
-                break;
-            case "L":
-                up = false;
-                right = false;
-                down = false;
-                left = true;
-                x -= velX;
-                break;
-            case "D":
-                up = false;
-                right = false;
-                down = true;
-                left = false;
-                y += velY;
-                break;
-            case "U":
-                up = true;
-                right = false;
-                down = false;
-                left = false;
-                y -= velY;
-                break;
-        }
+        move();
 
-        //x += velX;
-        // y += velY;
-
-        if(x <= 20) {
+        if (x <= 20) {
             //right warp
-            if (y >= 280 && y < 300)
-                x = 530;
-            else
+            if (y >= 280 && y < 300) {
                 x = 20;
-        }
-        if (x >= 550) {
-            //left warp
-            if(y >= 280 && y < 300) {
-                x = 20;
+                changeDirection();
             }
-            else
-                x = 550;
-        }
 
-        // Collisions with walls
-        LinkedList<WallEntity> we = controller.getWallEntity();
-        for(int i = 0; i < we.size(); i++){
-            WallEntity tempEnt = we.get(i);
-            if(Physics.Collision(this, tempEnt) && !tempEnt.isGhosLicense()){
-                double tempX = tempEnt.getX();
-                double tempY = tempEnt.getY();
-                if (tempX > x) {
-                    x = tempX - 20;
-                    changeDirection();
-                }
-                if (tempX < x) {
-                    x = tempX + 20;
-                    changeDirection();
-                }
-                if (tempY > y) {
-                    y = tempY - 20;
-                    changeDirection();
-                }
-                if (tempY < y) {
-                    y = tempY + 20;
-                    changeDirection();
-                }
+        }
+        if (x >= 450) {
+            if (y >= 280 && y < 300) {
+                x = 440;
+                changeDirection();
             }
         }
 
-        if(!isFlash) {
-            if (up)
-                upAnimation.runAnimation();
-            if (down)
-                downAnimation.runAnimation();
-            if (left)
-                leftAnimation.runAnimation();
-            if (right)
-                rightAnimation.runAnimation();
-        }
-        else{
-            flashAnimation.runAnimation();
-        }
+        wallCollision();
+
+        verifyFhashing();
     }
 
 }

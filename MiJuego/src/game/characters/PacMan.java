@@ -27,14 +27,14 @@ public class PacMan implements EntityA {
 
     private double x, y;
     private int lifes;
-    private int points;
+    public int points;
 
     private Textures textures;
     private Game game;
     private Controller c;
     private boolean up, down, right, left, isDeath;
 
-    private LinkedList<Point> specificPoints = new LinkedList<>();
+    private LinkedList<Point> specificPoints;
 
     // Animations
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, deathAnimation;
@@ -71,9 +71,7 @@ public class PacMan implements EntityA {
                 textures.deathPacman[2], textures.deathPacman[3],
                 textures.deathPacman[4], textures.deathPacman[5],
                 textures.deathPacman[6], textures.deathPacman[7]);
-
     }
-
     /**
      * Update the graphic movements of PacMan
      */
@@ -101,85 +99,13 @@ public class PacMan implements EntityA {
                 x = 540;
         }
 
-        // Collisions with walls
-        for(int i = 0; i < game.we.size(); i++){
-            WallEntity tempEnt = game.we.get(i);
-            if(Physics.Collision(this, tempEnt)){
-                double tempX = tempEnt.getX();
-                double tempY = tempEnt.getY();
-                if (tempX > x) {
-                    x = tempX - 20;
-                }
-                if (tempX < x) {
-                    x = tempX + 20;
-                }
-                if (tempY > y) {
-                    y = tempY - 20;
-                }
-                if (tempY < y) {
-                    y = tempY + 20;
-                }
-            }
-        }
+        wallCollision();
 
-        //Collisions with Ghosts
-        for(int i = 0; i < game.eb.size(); i++){
-            EntityB tempEnt = game.eb.get(i);
-            if(Physics.Collision(this, tempEnt)){
-                System.out.println("Collision");
-                if(!tempEnt.isFlash()) {
-                    //game.death.play();
-                    isDeath = true;
-                    game.isDeath = true;
-                    game.deathDelay = System.currentTimeMillis();
-                }
-                else{
-                    game.eatGhost.play();
-                    c.removeEntity(tempEnt);
-                }
-                /*game.setEnemy_cont(game.getEnemy_cont() + 1);
-                game.setEnemy_killed(game.getEnemy_killed() + 1);*/
-            }
-        }
+        ghostCollision();
 
-        // Collisions with Fruits or PacDots
-        for(int i = 0; i < game.ec.size(); i++){
-            EntityC tempEnt = game.ec.get(i);
-            if(Physics.Collision(this, tempEnt)){
-                this.points += tempEnt.getValue();
-                if(tempEnt.getClass().equals(Banana.class) || tempEnt.getClass().equals(Pineapple.class) ||
-                        tempEnt.getClass().equals(Cherry.class) || tempEnt.getClass().equals(Strawberry.class) ||
-                        tempEnt.getClass().equals(Apple.class) || tempEnt.getClass().equals(Orange.class) ){
-                    //game.eatFruit.play();
-                }
-                else if(tempEnt.getClass().equals(Pill.class)){
-                    System.out.println("Pill");
-                    //getPos();
-                    game.ghostFlashOn();
-                    game.flashTimer = System.currentTimeMillis();
-                    game.isFlahing = true;
-                }
-                else {
-                    //game.munch.play();
-                }
+        entityCCollision();
 
-                c.removeEntity(tempEnt);
-            }
-        }
-
-        if(!isDeath) {
-            if (up)
-                upAnimation.runAnimation();
-            if (down)
-                downAnimation.runAnimation();
-            if (left)
-                leftAnimation.runAnimation();
-            if (right)
-                rightAnimation.runAnimation();
-        }
-        else{
-            deathAnimation.runAnimation();
-        }
+        verifyDeath();
     }
 
     /**
@@ -240,6 +166,102 @@ public class PacMan implements EntityA {
         c.right = right;
         c.up = up;
         c.down = down;
+    }
+
+    private void wallCollision(){
+        // Collisions with walls
+        for(int i = 0; i < game.we.size(); i++){
+            WallEntity tempEnt = game.we.get(i);
+            if(Physics.Collision(this, tempEnt)){
+                double tempX = tempEnt.getX();
+                double tempY = tempEnt.getY();
+                if (tempX > x) {
+                    x = tempX - 20;
+                }
+                if (tempX < x) {
+                    x = tempX + 20;
+                }
+                if (tempY > y) {
+                    y = tempY - 20;
+                }
+                if (tempY < y) {
+                    y = tempY + 20;
+                }
+            }
+        }
+    }
+
+    private void ghostCollision(){
+        //Collisions with Ghosts
+        for(int i = 0; i < game.eb.size(); i++){
+            EntityB tempEnt = game.eb.get(i);
+            if(Physics.Collision(this, tempEnt)){
+                System.out.println("Collision");
+                if(!tempEnt.isFlash()) {
+                    //game.death.play();
+                    isDeath = true;
+                    c.removeEntity(tempEnt);
+                    game.isDeath = true;
+                    game.deathDelay = System.currentTimeMillis();
+                }
+                else{
+                    game.eatGhost.play();
+                    c.removeEntity(tempEnt);
+                }
+                /*game.setEnemy_cont(game.getEnemy_cont() + 1);
+                game.setEnemy_killed(game.getEnemy_killed() + 1);*/
+            }
+        }
+    }
+    private void entityCCollision(){
+
+        // Collisions with Fruits or PacDots
+        for(int i = 0; i < game.ec.size(); i++){
+            EntityC tempEnt = game.ec.get(i);
+            if(Physics.Collision(this, tempEnt)){
+                this.points += tempEnt.getValue();
+                if(tempEnt.getClass().equals(Banana.class) || tempEnt.getClass().equals(Pineapple.class) ||
+                        tempEnt.getClass().equals(Cherry.class) || tempEnt.getClass().equals(Strawberry.class) ||
+                        tempEnt.getClass().equals(Apple.class) || tempEnt.getClass().equals(Orange.class) ){
+                    //game.eatFruit.play();
+                }
+                else if(tempEnt.getClass().equals(Pill.class)){
+                    System.out.println("Pill");
+                    //getPos();
+                    game.ghostFlashOn();
+                    game.flashTimer = System.currentTimeMillis();
+                    game.isFlahing = true;
+                }
+                else {
+                    game.pacDotPoints -= 10;
+                    if (game.pacDotPoints == 0){
+                        game.pacDotPoints = 0;
+                        System.out.println("no pacdots");
+                        game.levelNum++;
+                        game.selectLevel();
+                    }
+                    //game.munch.play();
+                }
+
+                c.removeEntity(tempEnt);
+            }
+        }
+    }
+
+    private void verifyDeath(){
+        if(!isDeath) {
+            if (up)
+                upAnimation.runAnimation();
+            if (down)
+                downAnimation.runAnimation();
+            if (left)
+                leftAnimation.runAnimation();
+            if (right)
+                rightAnimation.runAnimation();
+        }
+        else{
+            deathAnimation.runAnimation();
+        }
     }
 
     public double getX() {

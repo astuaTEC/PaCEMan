@@ -4,6 +4,9 @@ import game.Controller;
 import game.algorithm.Algorithm;
 import game.algorithm.FindPath;
 import game.algorithm.Node;
+import game.classes.EntityB;
+import game.classes.WallEntity;
+import game.graphics.Physics;
 import game.graphics.Textures;
 import game.libs.Animation;
 
@@ -38,7 +41,7 @@ public class Ghost {
 
     public Algorithm algorithm = new Algorithm();
 
-    boolean up, down, right, left, isFlash;
+    boolean up, down, right, left, isFlash, isRender;
 
     // Animations
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, flashAnimation;
@@ -55,6 +58,7 @@ public class Ghost {
         down = true;
         left = false;
         isFlash = false;
+        isRender = true;
 
         indication = "R";
 
@@ -73,8 +77,7 @@ public class Ghost {
      * @param g Graphics to draw on the screen
      */
     public void render(Graphics g){
-
-        if(!isFlash) {
+        if (!isFlash) {
             if (up)
                 upAnimation.drawAnimation(g, x, y, 0);
             if (down)
@@ -83,8 +86,8 @@ public class Ghost {
                 leftAnimation.drawAnimation(g, x, y, 0);
             if (right)
                 rightAnimation.drawAnimation(g, x, y, 0);
-        }
-        else{
+
+        } else {
             flashAnimation.drawAnimation(g, x, y, 0);
         }
 
@@ -166,7 +169,7 @@ public class Ghost {
     }
 
     public void verifyRute(){
-        if(!destiny.equals(controller.pacManPos) && controller.pacManPos != null){
+        if(!destiny.equals(controller.pacManPos) && controller.pacManPos != null && !isFlash){
             Point start = getPos();
             destiny = controller.pacManPos;
             if(!start.equals(destiny) && verifyAstar(start, destiny) && specificPoints.contains(start)) {
@@ -182,8 +185,7 @@ public class Ghost {
         closedList.clear();
         algorithm.run();
         closedList = algorithm.A.getClosedList();
-        for(int i = 0; i < closedList.size(); i++){
-            Node node = closedList.get(i);
+        for (Node node : closedList) {
             points.add(new Point(node.getCol(), node.getRow()));
         }
 
@@ -196,6 +198,47 @@ public class Ghost {
             return false;
 
     }
+
+    public void wallCollision(){
+        // Collisions with walls
+        LinkedList<WallEntity> we = controller.getWallEntity();
+        for (WallEntity tempEnt : we) {
+            if (Physics.Collision((EntityB) this, tempEnt) && !tempEnt.isGhosLicense()) {
+                double tempX = tempEnt.getX();
+                double tempY = tempEnt.getY();
+                if (tempX > x) {
+                    x = tempX - 20;
+                }
+                if (tempX < x) {
+                    x = tempX + 20;
+                }
+                if (tempY > y) {
+                    y = tempY - 20;
+                }
+                if (tempY < y) {
+                    y = tempY + 20;
+                }
+                changeDirection();
+            }
+        }
+    }
+
+    public void verifyFhashing(){
+        if(!isFlash) {
+            if (up)
+                upAnimation.runAnimation();
+            if (down)
+                downAnimation.runAnimation();
+            if (left)
+                leftAnimation.runAnimation();
+            if (right)
+                rightAnimation.runAnimation();
+        }
+        else{
+            flashAnimation.runAnimation();
+        }
+    }
+
 
     public double getX() {
         return x;
@@ -213,11 +256,20 @@ public class Ghost {
         this.y = y;
     }
 
+    public void setVel(double vel) {
+        this.velX = vel;
+        this.velY = vel;
+    }
+
     public boolean isFlash() {
         return isFlash;
     }
 
     public void setFlash(boolean flash) {
         isFlash = flash;
+    }
+
+    public void setRender(boolean render) {
+        isRender = render;
     }
 }
