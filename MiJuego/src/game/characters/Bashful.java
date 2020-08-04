@@ -30,7 +30,6 @@ public class Bashful extends Ghost implements EntityB {
 
         leftAnimation = new Animation(10, textures.bashful[4], textures.bashful[5]);
 
-        destiny = new Point(14, 23);
     }
 
     /**

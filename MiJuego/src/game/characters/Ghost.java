@@ -2,7 +2,6 @@ package game.characters;
 
 import game.Controller;
 import game.algorithm.Algorithm;
-import game.algorithm.FindPath;
 import game.algorithm.Node;
 import game.classes.EntityB;
 import game.classes.WallEntity;
@@ -47,8 +46,8 @@ public class Ghost {
     Animation upAnimation, downAnimation, leftAnimation, rightAnimation, flashAnimation;
 
     public Ghost(double x, double y, Textures textures, Controller controller){
-        this.x = x;
-        this.y = y;
+        this.x = x*20;
+        this.y = y*20;
         this.textures = textures;
         this.controller = controller;
         this.specificPoints = controller.getSpecificPoints();
@@ -62,7 +61,7 @@ public class Ghost {
 
         indication = "R";
 
-        destiny = new Point(14, 23);
+        destiny = new Point((int)x, 9);
 
         velX = 1;
         velY = 1;

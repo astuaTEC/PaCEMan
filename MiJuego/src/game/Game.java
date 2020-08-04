@@ -1,10 +1,14 @@
 package game;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import game.characters.PacMan;
 import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
 import game.classes.WallEntity;
+import game.connection.Cliente;
 import game.elements.Life;
 import game.gameControls.KeyInput;
 import game.gameControls.MouseInput;
@@ -21,6 +25,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedList;
+
 
 /**
  * Game controller class
@@ -77,6 +82,7 @@ public class Game extends Canvas implements Runnable {
     private Textures textures;
     private Menu menu;
     private Map_1 map1;
+    public Cliente client = new Cliente(this);
 
     // Linked List of graphics elements
     public LinkedList<EntityA> ea;
@@ -98,6 +104,7 @@ public class Game extends Canvas implements Runnable {
      */
     public void init(){
         requestFocus();
+        client.ejecutarConexion("localhost", Integer.parseInt("5050"));
         BufferedImageLoader loader = new BufferedImageLoader();
 
         try {
@@ -150,7 +157,7 @@ public class Game extends Canvas implements Runnable {
 
     /**
      * This method controls the game cycle
-     * @ 60 fps
+     * @ 50 fps
      */
     @Override
     public void run() {
@@ -249,7 +256,7 @@ public class Game extends Canvas implements Runnable {
             g.setFont(font);
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(p.getPoints()), 795, 253);
-            g.drawString("Level: " + levelNum, 785, 400);
+            g.drawString("Level: " + levelNum, 780, 400);
             //map1.render(g);
             p.render(g);
             c.render(g);
@@ -460,6 +467,31 @@ public class Game extends Canvas implements Runnable {
             levelNum = 1;
             initLevel1();
         }
+    }
+
+    public void readMessage(String message){
+        System.out.println("Interpretando:...");
+
+        JsonParser parser = new JsonParser();
+        JsonObject object = (JsonObject) parser.parse(message);
+
+        int id = object.get("id").getAsInt();
+        System.out.println(id);
+        int x = object.get("xPos").getAsInt();
+        System.out.println(x);
+        int y = object.get("yPos").getAsInt();
+        System.out.println(y);
+
+    }
+
+    public void createMessage(int id){
+
+        /*JsonObject object = new JsonObject();
+        object.addProperty("id", id);
+        object.addProperty("xPos", x);
+        object.addProperty("yPos", y);
+        String json = object.toString();*/
+
     }
 
     public BufferedImage getSpriteSheet(){

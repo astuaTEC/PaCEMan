@@ -124,12 +124,12 @@ public class Shadow extends Ghost implements EntityB {
     public void render(Graphics g){
         //closedList = algorithm.A.getClosedList();
         // Draw full path
-        for(Node n : closedList) {
+        /*for(Node n : closedList) {
             int i = n.getRow();
             int j = n.getCol();
             g.setColor(Color.RED);
             g.fillRect(20 * j, 20 * i, 20, 20);
-        }
+        }*/
 
         if(!isFlash) {
             if (up)

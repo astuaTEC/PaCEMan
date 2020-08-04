@@ -205,7 +205,8 @@ public class PacMan implements EntityA {
                     game.deathDelay = System.currentTimeMillis();
                 }
                 else{
-                    game.eatGhost.play();
+                    //game.eatGhost.play();
+                    sendMessage(tempEnt);
                     c.removeEntity(tempEnt);
                 }
                 /*game.setEnemy_cont(game.getEnemy_cont() + 1);
@@ -261,6 +262,21 @@ public class PacMan implements EntityA {
         }
         else{
             deathAnimation.runAnimation();
+        }
+    }
+
+    public void sendMessage(EntityB entityB){
+        if(entityB.getClass().equals(Shadow.class)){
+            game.client.enviar("n1");
+        }
+        else if(entityB.getClass().equals(Speedy.class)){
+            game.client.enviar("n2");
+        }
+        else if(entityB.getClass().equals(Bashful.class)){
+            game.client.enviar("n3");
+        }
+        else if(entityB.getClass().equals(Pokey.class)){
+            game.client.enviar("n4");
         }
     }
 

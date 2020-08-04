@@ -43,10 +43,10 @@ public class Controller {
     public Controller(Textures textures){
         this.textures = textures;
 
-        addEntity(new Speedy(260, 220, textures, this));
-        addEntity(new Bashful(240, 220, textures, this));
-        addEntity(new Pokey(260, 260, textures, this));
-        addEntity(new Shadow(280, 220, textures, this));
+        addEntity(new Speedy(11, 13, textures, this));
+        addEntity(new Bashful(12, 13, textures, this));
+        addEntity(new Pokey(13, 13, textures, this));
+        addEntity(new Shadow(14, 13, textures, this));
 
         addEntity(new Banana(3, 2, 25, textures));
         addEntity(new Cherry(4, 2, 25, textures));
