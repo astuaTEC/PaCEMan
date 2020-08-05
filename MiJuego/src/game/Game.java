@@ -3,19 +3,22 @@ package game;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import game.characters.PacMan;
+import game.characters.*;
 import game.classes.EntityA;
 import game.classes.EntityB;
 import game.classes.EntityC;
 import game.classes.WallEntity;
 import game.connection.Cliente;
 import game.elements.Life;
+import game.elements.Pill;
+import game.fruits.*;
 import game.gameControls.KeyInput;
 import game.gameControls.MouseInput;
 import game.graphics.BufferedImageLoader;
 import game.graphics.Textures;
 import game.levels.Map_1;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -23,8 +26,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Random;
 
 
 /**
@@ -38,6 +43,7 @@ public class Game extends Canvas implements Runnable {
     public static final Integer WIDTH = 900;
     public static final Integer HEIGHT = 620;
     private final Font font = new Font("arial", Font.BOLD, 25);
+    private static JFrame frame;
 
     private Boolean running = false;
     private Thread thread;
@@ -47,6 +53,7 @@ public class Game extends Canvas implements Runnable {
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
     private BufferedImage menubg = null;
+    private Integer frames = 1;
 
     // Game audio
     public final AudioClip eatFruit = Applet.newAudioClip(getClass().
@@ -63,10 +70,10 @@ public class Game extends Canvas implements Runnable {
             getResource("/audio/pacman_intro.wav"));
 
     // Constants to handle the game
-    private Integer enemy_cont = 1;
-    private Integer enemy_killed = 0;
+    private Integer levelFlash = 8000;
     public Long flashTimer;
     public Long deathDelay;
+    public Long screenShotTimer = System.currentTimeMillis();
     public Boolean isFlahing = false;
     public Boolean isDeath = false;
     public Integer lives = 3;
@@ -81,6 +88,7 @@ public class Game extends Canvas implements Runnable {
     private Controller c;
     private Textures textures;
     private Menu menu;
+    private Random random;
     private Map_1 map1;
     public Cliente client = new Cliente(this);
 
@@ -104,7 +112,7 @@ public class Game extends Canvas implements Runnable {
      */
     public void init(){
         requestFocus();
-        client.ejecutarConexion("localhost", Integer.parseInt("5050"));
+        //client.ejecutarConexion("localhost", Integer.parseInt("5050"));
         BufferedImageLoader loader = new BufferedImageLoader();
 
         try {
@@ -124,7 +132,6 @@ public class Game extends Canvas implements Runnable {
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput());
 
-        //c.createEnemy(enemy_cont);
     }
 
     /**
@@ -190,7 +197,7 @@ public class Game extends Canvas implements Runnable {
                 frames = 0;
             }
             if(isFlahing) {
-                if (System.currentTimeMillis() - flashTimer > 8000) {
+                if (System.currentTimeMillis() - flashTimer > levelFlash) {
                     isFlahing = false;
                     ghostFlashOff();
                 }
@@ -220,6 +227,15 @@ public class Game extends Canvas implements Runnable {
                 }
             }
 
+            if(pacDotPoints >= 10000){
+                //client.enviar("live");
+                lives++;
+                // Add the PacMan lives to draw in the screen
+                for (int x = 0; x < lives; x++){
+                    graphicLives.add(new Life(25*x + 785, 325, textures));
+                }
+            }
+
         }
         stop();
     }
@@ -239,6 +255,7 @@ public class Game extends Canvas implements Runnable {
      * Update game graphics
      */
     private void render(){
+        //takeScreen();
         BufferStrategy bs = this.getBufferStrategy();
 
         if (bs == null){
@@ -247,6 +264,7 @@ public class Game extends Canvas implements Runnable {
         }
 
         Graphics g = bs.getDrawGraphics();
+
         ////////////////////////////////
         g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
 
@@ -268,6 +286,7 @@ public class Game extends Canvas implements Runnable {
         }
 
         ///////////////////////////////
+
         g.dispose();
         bs.show();
     }
@@ -340,7 +359,7 @@ public class Game extends Canvas implements Runnable {
         game.setMaximumSize(new Dimension(WIDTH, HEIGHT));
         game.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.add(game);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -448,16 +467,21 @@ public class Game extends Canvas implements Runnable {
 
     public void selectLevel(){
         if(levelNum == 1) {
+            levelFlash = 8000;
             lives = 3;
             initLevel1();
         }
         else if(levelNum == 2){
             //initLevel2
+            levelFlash = 7000;
+            //client.enviar("n8");
             lives = 3;
             initLevel2();
         }
         else if(levelNum == 3){
             //initLevel3
+            levelFlash = 6000;
+            //client.enviar("n8");
             lives = 3;
             initLevel3();
         }
@@ -476,42 +500,117 @@ public class Game extends Canvas implements Runnable {
         JsonObject object = (JsonObject) parser.parse(message);
 
         int id = object.get("id").getAsInt();
-        System.out.println(id);
+        System.out.println("ID: " + id);
         int x = object.get("xPos").getAsInt();
-        System.out.println(x);
+        System.out.println("xPos: " + x);
         int y = object.get("yPos").getAsInt();
-        System.out.println(y);
+        System.out.println("yPos: " + y);
+
+        switch (id){
+            case 1:
+                c.addEntity(new Speedy(0,0, textures, c));
+                break;
+            case 2:
+                c.addEntity(new Bashful(0,0, textures, c));
+                break;
+            case 3:
+                c.addEntity(new Shadow(0,0, textures, c));
+                break;
+            case 4:
+                c.addEntity(new Pokey(0,0, textures, c));
+                break;
+            case 5:
+                System.out.println("Fruit");
+                int i = random.nextInt(7) ;
+                if(i == 0){
+                    c.addEntity(new Banana(x, y, 1000, textures));
+                }
+                else if(i == 1){
+                    c.addEntity(new Apple(x, y, 1000, textures));
+                }
+                else if(i == 2){
+                    c.addEntity(new Cherry(x, y, 1000, textures));
+                }
+                else if(i == 3){
+                    c.addEntity(new Pineapple(x, y, 1000, textures));
+                }
+                else if(i == 4){
+                    c.addEntity(new Orange(x, y, 1000, textures));
+                }
+                else{
+                    c.addEntity(new Strawberry(x, y, 1000, textures));
+                }
+                break;
+            case 6:
+                System.out.println("Pill");
+                c.addEntity(new Pill(x, y, textures));
+                break;
+            case 7:
+                int vel = object.get("currentSpeed").getAsInt();
+                if(vel == 1){
+                    c.setGhostVel(0.5);
+                }
+                else if(vel == 2){
+                    c.setGhostVel(1.0);
+                }
+                else if(vel == 3){
+                    c.setGhostVel(1.5);
+                }
+                else if(vel == 4){
+                    c.setGhostVel(2.0);
+                }
+                else if(vel == 5){
+                    c.setGhostVel(2.5);
+                }
+                System.out.println("Up vel");
+                break;
+            case 8:
+                vel = object.get("currentSpeed").getAsInt();
+                if(vel == 1){
+                    c.setGhostVel(0.5);
+                }
+                else if(vel == 2){
+                    c.setGhostVel(1.0);
+                }
+                else if(vel == 3){
+                    c.setGhostVel(1.5);
+                }
+                else if(vel == 4){
+                    c.setGhostVel(2.0);
+                }
+                else if(vel == 5){
+                    c.setGhostVel(2.5);
+                }
+                System.out.println("Down vel");
+                break;
+            case 9:
+                lives++;
+                // Add the PacMan lives to draw in the screen
+                for (int c = 0; c < lives; c++){
+                    graphicLives.add(new Life(25*c + 785, 325, textures));
+                }
+                break;
+        }
 
     }
 
-    public void createMessage(int id){
-
-        /*JsonObject object = new JsonObject();
-        object.addProperty("id", id);
-        object.addProperty("xPos", x);
-        object.addProperty("yPos", y);
-        String json = object.toString();*/
-
+    public void takeScreen(){
+        if (System.currentTimeMillis() - screenShotTimer > 100) {
+            try {
+                BufferedImage img = new Robot().createScreenCapture(new Rectangle(frame.getX() + 10,
+                        frame.getY() + 33, WIDTH, HEIGHT));
+                ImageIO.write(img, "png", new File("screens/screenshot" + frames + ".png"));
+                frames++;
+                screenShotTimer = System.currentTimeMillis();
+            } catch (IOException | AWTException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public BufferedImage getSpriteSheet(){
         return spriteSheet;
     }
 
-    public Integer getEnemy_cont() {
-        return enemy_cont;
-    }
-
-    public void setEnemy_cont(Integer enemy_cont) {
-        this.enemy_cont = enemy_cont;
-    }
-
-    public Integer getEnemy_killed() {
-        return enemy_killed;
-    }
-
-    public void setEnemy_killed(Integer enemy_killed) {
-        this.enemy_killed = enemy_killed;
-    }
 
 }

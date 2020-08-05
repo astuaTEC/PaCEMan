@@ -15,7 +15,7 @@ import java.awt.*;
 public class Speedy extends Ghost implements EntityB {
 
     public Speedy(double x, double y, Textures textures, Controller controller){
-        super(x, y, textures, controller);
+        super(11, 13, textures, controller);
 
         upAnimation = new Animation(10, textures.speedy[6], textures.speedy[7]);
 

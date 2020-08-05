@@ -20,7 +20,7 @@ public class Bashful extends Ghost implements EntityB {
 
 
     public Bashful(double x, double y, Textures textures, Controller controller){
-        super(x, y, textures, controller);
+        super(12, 13, textures, controller);
 
         upAnimation = new Animation(10, textures.bashful[6], textures.bashful[7]);
 

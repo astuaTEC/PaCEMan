@@ -106,7 +106,7 @@ public class Map_1 {
                 }
                 else if (level1[i][j] == 6){
                     // Add a Pill to draw in the screen
-                    c.addEntity(new Pill(j*20 - 2, i*20 - 5, textures));
+                    c.addEntity(new Pill(j, i, textures));
                 }
             }
         }

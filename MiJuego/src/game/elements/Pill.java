@@ -19,8 +19,8 @@ public class Pill implements EntityC {
     BufferedImage pill;
 
     public Pill(double x, double y, Textures textures){
-        this.x = x;
-        this.y = y;
+        this.x = x*20 - 2;
+        this.y = y*20 - 5;
         this.value = 50;
         this.textures = textures;
 

@@ -24,7 +24,7 @@ public class Shadow extends Ghost implements EntityB {
     Point destiny;
 
     public Shadow(double x, double y, Textures textures, Controller controller){
-        super(x, y, textures, controller);
+        super(14, 13, textures, controller);
 
         this.velX = 1;
         this.velY = 1;

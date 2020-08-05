@@ -199,6 +199,7 @@ public class PacMan implements EntityA {
                 System.out.println("Collision");
                 if(!tempEnt.isFlash()) {
                     //game.death.play();
+                    //client.enviar("n6");
                     isDeath = true;
                     c.removeEntity(tempEnt);
                     game.isDeath = true;
@@ -206,14 +207,14 @@ public class PacMan implements EntityA {
                 }
                 else{
                     //game.eatGhost.play();
-                    sendMessage(tempEnt);
+                    //sendMessage(tempEnt);
                     c.removeEntity(tempEnt);
                 }
-                /*game.setEnemy_cont(game.getEnemy_cont() + 1);
-                game.setEnemy_killed(game.getEnemy_killed() + 1);*/
             }
         }
     }
+
+
     private void entityCCollision(){
 
         // Collisions with Fruits or PacDots
@@ -225,6 +226,7 @@ public class PacMan implements EntityA {
                         tempEnt.getClass().equals(Cherry.class) || tempEnt.getClass().equals(Strawberry.class) ||
                         tempEnt.getClass().equals(Apple.class) || tempEnt.getClass().equals(Orange.class) ){
                     //game.eatFruit.play();
+                    System.out.println("Eat fruit");
                 }
                 else if(tempEnt.getClass().equals(Pill.class)){
                     System.out.println("Pill");
@@ -235,6 +237,7 @@ public class PacMan implements EntityA {
                 }
                 else {
                     game.pacDotPoints -= 10;
+                    //game.client.enviar("n5");
                     if (game.pacDotPoints == 0){
                         game.pacDotPoints = 0;
                         System.out.println("no pacdots");

@@ -20,7 +20,7 @@ public class Pokey extends Ghost implements EntityB {
     ArrayList<String> movements = new ArrayList<>();
 
     public Pokey(double x, double y, Textures textures, Controller controller){
-        super(x, y, textures, controller);
+        super(13, 13, textures, controller);
 
         upAnimation = new Animation(10, textures.pokey[6], textures.pokey[7]);
 
