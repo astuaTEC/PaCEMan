@@ -1,0 +1,3 @@
+C:/Users/OscarAraya/Desktop/PaCE Man Admin/cmake-build-debug/CMakeFiles/PaCE_Man_Admin.dir
+C:/Users/OscarAraya/Desktop/PaCE Man Admin/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/OscarAraya/Desktop/PaCE Man Admin/cmake-build-debug/CMakeFiles/rebuild_cache.dir

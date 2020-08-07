@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PaCE Man Admin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PaCE_Man_Admin_jar</output-path>
+    <root id="archive" name="PaCE Man Admin.jar">
+      <element id="module-output" name="PaCEManAdmin" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/Library/gson-2.8.6.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

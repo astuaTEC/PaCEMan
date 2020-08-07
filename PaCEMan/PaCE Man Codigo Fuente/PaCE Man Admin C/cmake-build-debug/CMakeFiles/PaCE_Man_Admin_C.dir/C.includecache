@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/OscarAraya/Desktop/PaCE Man Admin C/Constants.c
+
+C:/Users/OscarAraya/Desktop/PaCE Man Admin C/PaCEManAdminC.c
+stdio.h
+-
+string.h
+-
+stdbool.h
+-
+stdlib.h
+-
+Constants.c
+C:/Users/OscarAraya/Desktop/PaCE Man Admin C/Constants.c
+
